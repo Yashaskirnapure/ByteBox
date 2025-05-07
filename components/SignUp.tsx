@@ -37,7 +37,7 @@ const SignUp = () => {
             defaultValues: {
                 email: "",
                 password: "",
-                passwordConfirmation: "", 
+                passwordConfirmation: "",
             }
         }
     );
@@ -54,11 +54,9 @@ const SignUp = () => {
             });
 
             await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-
             setVerifying(true);
         }catch(err: any){
-            console.log("Sign up error: ", err);
-            setAuthError(err.errors?.[0]?.message || "An error occurred during sign up, please try again.");
+            setAuthError(err.errors?.[0]?.message || err?.message || "An error occurred during sign up, please try again.");
         }finally{
             setIsSubmitting(false);
         }
@@ -67,10 +65,12 @@ const SignUp = () => {
     const handleVerification = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if(!isLoaded || !signUp) return;
-
+        setVerificationError(null);
         setIsSubmitting(true);
+
         try{
             const result = await signUp.attemptEmailAddressVerification({ code: verificationCode });
+            console.log(result);
             if(result.status === 'complete'){
                 await setActive({ session: result.createdSessionId });
                 router.push('/dashboard');
@@ -80,7 +80,7 @@ const SignUp = () => {
             }
         }catch(err: any){
             console.log("Verification error: ", err);
-            setVerificationError(err.errors?.[0]?.message || "An error occurred during sign up, please try again.");
+            setVerificationError(err.errors?.['0']?.message || "An error occurred during sign up, please try again.");
         }finally{
             setIsSubmitting(false);
         }
@@ -90,7 +90,7 @@ const SignUp = () => {
         <Card className='w-full max-w-md border border-default-200 bg-default-50 shadow-xl'>
             <CardHeader>
                 <CardTitle>Verify Your Email</CardTitle>
-                <CardDescription>We have sent a verification code to your email</CardDescription>
+                <CardDescription>We have sent a verification code to your email address</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleVerification}>
@@ -103,15 +103,15 @@ const SignUp = () => {
                         />
                         <Button className="w-full cursor-pointer">Verify</Button>
                     </div>
+                    {isSubmitting && (<div className="mt-4 text-md text-muted-foreground">Verifying. Please wait.....</div>)}
+                    {verificationError && (<p className="mt-2 text-sm text-red-500 font-medium">{verificationError}</p>)}
                 </form>
-                {isSubmitting && (<div className="mt-4 text-md text-muted-foreground">Verifying. Please wait.....</div>)}
-                {verificationError && (<p className="mt-2 text-sm text-red-500 font-medium">Something went wrong please try again.</p>)}
             </CardContent>
         </Card>
     );
 
   return (
-    <div className='flex w-full h-full justify-center items-center'>
+    <div className='flex w-full h-full justify-center items-center' id='clerk-captcha'>
         <form onSubmit={handleSubmit(submitHandler)}>
             <Card className="w-[500px]">
                 <CardHeader>
@@ -160,16 +160,20 @@ const SignUp = () => {
                         </div>
                     </div>
                     {isSubmitting && (<div className="mt-4 text-md text-muted-foreground">Processing. Please wait.....</div>)}
+                    {authError && (<p className="mt-2 text-sm text-red-500 font-medium">{authError}</p>)}
                 </CardContent>
                 <CardFooter className="flex justify-between">
                     <Button
                         className="cursor-pointer"
                         variant="outline"
+                        type='button'
                         onClick={() => { router.push('/sign-in') }}
                     >Sign In</Button>
-                    <Button className='cursor-pointer'>Submit</Button>
+                    <Button
+                        className='cursor-pointer'
+                        type='submit'
+                    >Submit</Button>
                 </CardFooter>
-                {authError && (<p className="mt-2 text-sm text-red-500 font-medium">Something went wrong. Please try again.</p>)}
             </Card>
         </form>
     </div>

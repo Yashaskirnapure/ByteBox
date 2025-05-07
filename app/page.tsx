@@ -3,7 +3,7 @@ import SignUp from "@/components/SignUp";
 
 export default function Home() {
   return (
-    <div className="h-screen w-full flex justify-center items-center">
+    <div className="flex h-screen w-full flex-col justify-center items-center">
     </div>
   );
 }
