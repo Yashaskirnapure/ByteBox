@@ -43,7 +43,7 @@ const SignUp = () => {
     );
 
     const submitHandler = async (data: z.infer<typeof signUpSchema>) => {
-        if(!isLoaded) return;
+        if(!isLoaded) return; 
         setIsSubmitting(true);
         setAuthError(null);
 
