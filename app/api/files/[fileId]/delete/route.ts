@@ -61,6 +61,7 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ fi
         const [ deletedFile ] = await db.delete(files).where(and(eq(files.id, fileId), eq(files.userID, queryUserId))).returning();
         return NextResponse.json({ message: "File deleted.", content: deletedFile }, { status: 200 });
     }catch(err: any){
+        console.log("Error while deleting.", err);
         return NextResponse.json({ message: "Could not star file. Try again later" }, { status: 500 });
     }
 }

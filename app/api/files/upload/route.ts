@@ -66,6 +66,7 @@ export async function POST(request: NextRequest){
         const [ newFile ] = await db.insert(files).values(fileData).returning();
         return NextResponse.json({ success: true, content: newFile, message: "File uploaded successfully." }, { status: 200 });
     }catch(err: any){
-        return NextResponse.json({  }, { status: 500 });
+        console.log("Error while uploading.", err);
+        return NextResponse.json({ message: "Something went wrong while uploading." }, { status: 500 });
     }
 }

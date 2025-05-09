@@ -18,11 +18,14 @@ export async function POST(request: NextRequest){
             return NextResponse.json({error: "Folder name is required." }, { status: 400 });
         
         if(parentID){
-            const [parentFolder] = await db.select()
-                                        .from(files)
+            const [parentFolder] = await db.select().from(files)
                                         .where(
-                                            and(eq(files.id, parentID), eq(files.userID, userId), eq(files.isFolder, true)));
-
+                                            and(
+                                                eq(files.id, parentID),
+                                                eq(files.userID, userId),
+                                                eq(files.isFolder, true)
+                                            )
+                                        );
             if(!parentFolder) return NextResponse.json({error: "Parent folder not found" }, { status: 404 });
         }
 
@@ -44,6 +47,7 @@ export async function POST(request: NextRequest){
         await db.insert(files).values(newFolderData).returning();
         return NextResponse.json({ success: true, message: "Folder created successsully.", folder: newFolderData });
     }catch(err: any){
+        console.log("Failed to create folder", err);
         return NextResponse.json({ error: "Failed to create folder. Please try again." }, { status: 500 });
     }
 }

@@ -21,6 +21,7 @@ export async function GET(request: NextRequest){
 
         return NextResponse.json({ success: true, content: folderContent });
     }catch(err: any){
+        console.log("Failed to get data.", err);
         return NextResponse.json({ error: "Failed to get data. Please try again." }, { status: 500 });
     }
 }

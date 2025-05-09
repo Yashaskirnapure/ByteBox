@@ -22,6 +22,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ fil
         const [ updatedEntry ] = await db.update(files).set({ isStarred: !file.isStarred }).where(and(eq(files.userID, userId), eq(files.id, fileId))).returning();
         return NextResponse.json({ message: "Star status updated", content: updatedEntry }, { status: 200 });
     }catch(err: any){
+        console.log("Error while starring.", err);
         return NextResponse.json({ message: "Could not star file. Try again later" }, { status: 500 });
     }
 }

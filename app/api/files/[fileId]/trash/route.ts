@@ -16,10 +16,17 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ fil
         if(!fileId) return NextResponse.json({ message: "Bad Request" }, { status: 400 });
         if(queryUserId && queryUserId !== userId) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-        const [ file ] = await db.select().from(files).where(and(eq(files.id, fileId), eq(files.userID, userId), eq(files.isFolder, false)));
+        const [ file ] = await db.select().from(files)
+                            .where(
+                                and(
+                                    eq(files.id, fileId),
+                                    eq(files.userID, userId),
+                                    eq(files.isFolder, false),
+                                    eq(files.isTrash, false)
+                                )
+                            );
         if(!file) return NextResponse.json({ message: "File not found" }, { status: 404 });
 
-        if(!file.isTrash) return NextResponse.json({ message: "Bad Request" }, { status: 400 });
         const [ updatedFile ] = await db.update(files).set({ isTrash: true }).where(and(eq(files.id, fileId), eq(files.userID, userId))).returning();
 
         return NextResponse.json({ success: true, message: "File successfully moved to trash", content: updatedFile }, { status: 200 });

@@ -1,0 +1,16 @@
+requirements ::
+1. Authentication
+
+#resource creation --->
+1. upload file ---> root / inside a folder
+2. create folder.
+
+#resource updation ----->
+1. star the file.
+2. moving to trash.
+3. permenantly deleting file.
+4. deleting folder.
+5. clear trash
+
+#get resources ------>
+1. given userId and parentId---> provide all the entries in that parent folder
