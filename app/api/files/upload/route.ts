@@ -40,7 +40,7 @@ export async function POST(request: NextRequest){
         const filename = file.name;
         const fileExtension = file.name.split('.').pop() || "";
         const uniqueFilename = `${uuidv4()}.${fileExtension}`;
-        const folderPath = formParentId ? `/droply/${userId}/folders/${formParentId}` : `/droply/${userId}`;
+        const folderPath = formParentId ? `/bytebox/${userId}/folders/${formParentId}` : `/bytebox/${userId}`;
 
         const uploadResponse = await imageKit.upload({
             file: fileBuffer,

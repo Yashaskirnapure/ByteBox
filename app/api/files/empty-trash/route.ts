@@ -30,7 +30,41 @@ export async function DELETE(request: NextRequest){
                                     );
 
         if(trashedFiles.length == 0) return NextResponse.json({ message: "No files in trash." }, { status: 200 });
-        
+        const deletePromise = trashedFiles.map(async (file) => {
+            try{
+                let imageKitId = null;
+                if(file.fileUrl){
+                    const fileUrlWithoutQuery = file.fileUrl.split('?')[0];
+                    imageKitId = fileUrlWithoutQuery.split('/').pop();
+                }
+
+                if(!imageKitId && file.path){
+                    imageKitId = file.path.split('/').pop();
+                }
+
+                if(imageKitId){
+                    try{
+                        const searchResults = await imageKit.listFiles({ name: imageKitId, limit: 1 });
+                        if(searchResults && searchResults.length > 0) await imageKit.deleteFile(searchResults[0].fileId);
+                        else await imageKit.deleteFile(imageKitId);
+                    }catch(searchError){
+                        console.log("Could not find file specified.", searchError);
+                    }
+                }
+            }catch(err: any){
+                console.log("Could not delete file", err);
+            }
+        });
+
+        await Promise.allSettled(deletePromise);
+        const deletedFiles = await db.delete(files).where(
+                    and(
+                        eq(files.userID, userId),
+                        eq(files.isTrash, true),
+                        eq(files.isFolder, false)
+                    ));
+
+        return NextResponse.json({ success: true, message: "File successfully deleted", content: deletedFiles }, { status: 200 });
     }catch(err: any){
         console.log("Could not empty trash.", err);
         return NextResponse.json({ message: "Could not empty trash" }, { status: 500 });

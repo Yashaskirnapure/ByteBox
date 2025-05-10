@@ -30,26 +30,26 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ fi
 
         if(!file.isFolder){
             try {
-                let imagekitFileId = null;
+                let imagekitId = null;
                 if (file.fileUrl) {
                     const urlWithoutQuery = file.fileUrl.split("?")[0];
-                    imagekitFileId = urlWithoutQuery.split("/").pop();
+                    imagekitId = urlWithoutQuery.split("/").pop();
                 }
         
-                if (!imagekitFileId && file.path) imagekitFileId = file.path.split("/").pop();
+                if (!imagekitId && file.path) imagekitId = file.path.split("/").pop();
         
-                if (imagekitFileId) {
+                if (imagekitId){
                     try{
                         const searchResults = await imageKit.listFiles({
-                            name: imagekitFileId,
+                            name: imagekitId,
                             limit: 1,
                         });
         
                         if (searchResults && searchResults.length > 0) await imageKit.deleteFile(searchResults[0].fileId);
-                        else await imageKit.deleteFile(imagekitFileId);
+                        else await imageKit.deleteFile(imagekitId);
                     }catch(searchError){
                         console.error(`Error searching for file in ImageKit:`, searchError);
-                        await imageKit.deleteFile(imagekitFileId);
+                        await imageKit.deleteFile(imagekitId);
                     }
                 }
             
