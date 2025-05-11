@@ -1,9 +1,11 @@
 import React from 'react';
+import { SideBar } from '@/components/SideBar';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const Home = () => {
   return (
-    <div>
-        Dashboard
+    <div className='flex w-full h-screen'>
+        <SideBar />
     </div>
   )
 }

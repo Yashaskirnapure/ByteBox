@@ -28,7 +28,6 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ fil
         if(!file) return NextResponse.json({ message: "File not found" }, { status: 404 });
 
         const [ updatedFile ] = await db.update(files).set({ isTrash: true }).where(and(eq(files.id, fileId), eq(files.userID, userId))).returning();
-
         return NextResponse.json({ success: true, message: "File successfully moved to trash", content: updatedFile }, { status: 200 });
     }catch(err){
         console.log("Error occurred while moving to trash.", err);
