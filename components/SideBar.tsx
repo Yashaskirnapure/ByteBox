@@ -1,49 +1,54 @@
 import {
 	UploadCloud,
 	Trash,
-	FileText,
-	Folder,
+	Folders,
 	Users,
-	Clock,
 	Star,
-	DiscAlbum,
-	Box
+	Box,
+	Settings,
+	LogOut,
+	User,
+	LayoutDashboard,
+
 } from "lucide-react";
 import { SidebarItem } from "./SidebarItem";
+import { Separator } from "./ui/separator";
 
 export function SideBar() {
 	return (
-		<div className="w-64 h-screen border-r bg-white flex flex-col justify-between py-4 px-3 space-y-6 text-sm">
+		<div className="w-70 h-screen border-r bg-white flex flex-col justify-between py-4 px-3 space-y-6 text-sm">
 			<div className="space-y-4">
 				<div className="flex items-center gap-2 px-2">
 					<Box className="w-5 h-5 text-black" />
 					<span className="text-lg font-bold">BYTEBOX</span>
 				</div>
-				<button className="w-full flex items-center justify-center bg-black text-white text-sm rounded-lg px-3 py-2 font-medium hover:bg-neutral-800 transition">
+				<button className="cursor-pointer w-full flex items-center justify-center bg-black text-white text-sm rounded-lg px-3 py-2 font-medium hover:bg-neutral-800 transition">
 					<UploadCloud className="w-4 h-4 mr-2" />
 					Upload
 				</button>
-
-				<div className="space-y-1 px-2">
-					<p className="text-muted-foreground uppercase text-xs font-semibold mb-1">Personal</p>
-					<SidebarItem icon={Star} label="Priority" />
+				<Separator/>
+				<div className="px-2">
+					<p className="text-muted-foreground uppercase text-xs font-semibold mb-2">Personal</p>
+					<SidebarItem icon={User} label="Profile" />
 					<SidebarItem icon={Users} label="Shared with me" />
-					<SidebarItem icon={Clock} label="Meetings" />
+					<SidebarItem icon={Settings} label="Settings" />
 				</div>
-
-				<div className="space-y-1 px-2">
-					<p className="text-muted-foreground uppercase text-xs font-semibold mb-1">Cloud</p>
-					<SidebarItem icon={Folder} label="Team Cloud" active />
-					<SidebarItem icon={DiscAlbum} label="Space Recordings" />
-					<SidebarItem icon={DiscAlbum} label="Space Snapshots" />
+				<Separator/>
+				<div className="px-2">
+					<p className="text-muted-foreground uppercase text-xs font-semibold mb-2">Manage</p>
+					<SidebarItem icon={Folders} label="File Manager" />
+					<SidebarItem icon={LayoutDashboard} label="Dashboard" />
+				</div>
+				<Separator/>
+				<div className="px-2">
+					<SidebarItem icon={Star} label="Starred" />
 					<SidebarItem icon={Trash} label="Trash" />
 				</div>
-
-				<div className="space-y-1 px-2">
-					<p className="text-muted-foreground uppercase text-xs font-semibold mb-1">Quick Access</p>
-					<SidebarItem icon={FileText} label="3.png-05-11-23..." />
-					<SidebarItem icon={FileText} label="3.png-05-11-23..." />
-				</div>
+				<Separator/>
+				<button className="cursor-pointer w-full flex items-center justify-center bg-red-600 text-white text-sm rounded-lg px-3 py-2 font-medium hover:bg-red-800 transition">
+					<LogOut className="w-4 h-4 mr-2" />
+					LOGOUT
+				</button>
 			</div>
 		</div>
 	);
