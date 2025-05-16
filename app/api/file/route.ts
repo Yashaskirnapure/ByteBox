@@ -19,7 +19,7 @@ export async function GET(request: NextRequest){
         if(queryParentId) folderContent = await db.select().from(files).where(and(eq(files.userID, queryUserId), eq(files.parentID, queryParentId)));
         else folderContent = await db.select().from(files).where(and(eq(files.userID, queryUserId), isNull(files.parentID)));
 
-        return NextResponse.json({ success: true, content: folderContent });
+        return NextResponse.json({ success: true, content: folderContent }, { status: 200 });
     }catch(err: any){
         console.log("Failed to get data.", err);
         return NextResponse.json({ error: "Failed to get data. Please try again." }, { status: 500 });

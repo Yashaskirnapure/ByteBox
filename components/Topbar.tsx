@@ -1,10 +1,14 @@
+'use client';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
 import { Separator } from './ui/separator';
+import { useDirectory } from '@/context/DirectoryContext';
 
 export default function Topbar() {
-	const [ workingDir, setWorkingdir ] = useState<string>("/");
+	const { workingDir, setWorkingDir } = useDirectory();
+
 	return (
 		<div>
 			<div className="px-4 py-2 space-y-2">
