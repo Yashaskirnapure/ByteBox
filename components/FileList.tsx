@@ -27,12 +27,16 @@ interface FileInfo {
 
 const FileList = () => {
 	const [ files, setFiles ] = useState<Array<FileInfo>>([]);
-	const [ isLoadingError, setIsLoadingError ] = useState<boolean>(true);
+	const [ isLoadingError, setIsLoadingError ] = useState<boolean>(false);
 	const [ loadingError, setLoadingError ] = useState<string | null>(null);
 	const { isLoaded, isSignedIn, user } = useUser();
 
 	const { workingDir, setWorkingDir } = useDirectory();
 	const router = useRouter();
+
+	useEffect(() => {
+		if(isLoaded && !isSignedIn) router.push('/sign-in');
+	}, [isLoaded, isSignedIn, router]);
 
 	useEffect(() => {
 		const fetchFiles = async () => {
@@ -55,13 +59,10 @@ const FileList = () => {
 			}
 		}
 		fetchFiles();
-	}, [isLoaded, isSignedIn, workingDir, isLoadingError]);
+	}, [isLoaded, isSignedIn, workingDir, user]);
 
 	if(!isLoaded) return <h1>Loading....please wait</h1>
-	if(!isSignedIn){
-		router.push('/sign-in');
-		return;
-	}
+	if(!isSignedIn) return null;
 
 	return (
 		<div className="w-full h-full p-3 bg-gray-100">

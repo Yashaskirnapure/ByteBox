@@ -1,3 +1,5 @@
+'use client';
+
 import {
 	UploadCloud,
 	Trash,
@@ -13,6 +15,7 @@ import {
 } from "lucide-react";
 import { SidebarItem } from "./SidebarItem";
 import { Separator } from "./ui/separator";
+import { Button } from "./ui/button";
 
 export function SideBar() {
 	return (
@@ -22,10 +25,10 @@ export function SideBar() {
 					<Box className="w-5 h-5 text-black" />
 					<span className="text-lg font-bold">BYTEBOX</span>
 				</div>
-				<button className="cursor-pointer w-full flex items-center justify-center bg-black text-white text-sm rounded-lg px-3 py-2 font-medium hover:bg-neutral-800 transition">
-					<UploadCloud className="w-4 h-4 mr-2" />
-					Upload
-				</button>
+				<Button className="cursor-pointer w-full flex items-center justify-center text-white text-sm rounded-lg px-3 py-2 font-medium">
+					<LogOut className="w-4 h-4 mr-2" />
+					LOGOUT
+				</Button>
 				<Separator/>
 				<div className="px-2">
 					<p className="text-muted-foreground uppercase text-xs font-semibold mb-2">Personal</p>
@@ -45,10 +48,6 @@ export function SideBar() {
 					<SidebarItem icon={Trash} label="Trash" />
 				</div>
 				<Separator/>
-				<button className="cursor-pointer w-full flex items-center justify-center bg-red-600 text-white text-sm rounded-lg px-3 py-2 font-medium hover:bg-red-800 transition">
-					<LogOut className="w-4 h-4 mr-2" />
-					LOGOUT
-				</button>
 			</div>
 		</div>
 	);
