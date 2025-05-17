@@ -1,21 +1,32 @@
 'use client';
 
-import { Label } from './ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { User } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useDirectory } from '@/context/DirectoryContext';
 import { UploadCloud } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 export default function Topbar() {
 	const { workingDir, setWorkingDir } = useDirectory();
 	const fileRef = useRef<HTMLInputElement>(null);
+	const [ fileInputError, setFileInputError ] = useState<boolean>(false);
+	const [ error, setError ] = useState<string | null>(null);
 
 	const handleUploadClick = () => { fileRef.current?.click(); }
-	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		
+	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		const files = event.target.files;
+		if(!files || files.length === 0){
+			setFileInputError(true);
+			setError("Please upload file");
+			return;
+		}
+
+		const file = files[0];
+		const formData = new FormData();
+		formData.append('file', file);
+
+		const response = await fetch(``)
 	}
 
 	return (
@@ -30,8 +41,9 @@ export default function Topbar() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">File Manager</h2>
 					<div className='flex justify-center items-center gap-2'>
-						<Input hidden id="file" type="file" />
+						<Input hidden ref={fileRef} id="file" type="file" />
 						<Button
+							onClick={handleUploadClick}
 							className="cursor-pointer text-xs"
 							variant='outline'
 						>
