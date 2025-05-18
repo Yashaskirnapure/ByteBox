@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useContext } from 'react';
-import { createContext, useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 
 interface DirectoryContextType {
+	id: string | null,
+	setId: (id: string) => void
 	workingDir: string,
 	setWorkingDir: (dir: string) => void,
 	refreshKey: number,
@@ -14,11 +15,12 @@ const DirectoryContext = createContext<DirectoryContextType | undefined> (undefi
 
 export const DirectoryContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const [ workingDir, setWorkingDir ] = useState<string>('/');
-	const [ refreshKey, setRefreshKey ] = useState(0);
+	const [ refreshKey, setRefreshKey ] = useState<number>(0);
 	const incrementRefreshKey = () => { setRefreshKey(refreshKey+1) }
+	const [ id, setId ] = useState<string | null>(null);
 
 	return (
-		<DirectoryContext.Provider value={{ workingDir, setWorkingDir, refreshKey, incrementRefreshKey }}>
+		<DirectoryContext.Provider value={{ id, setId, workingDir, setWorkingDir, refreshKey, incrementRefreshKey }}>
 			{children}
 		</DirectoryContext.Provider>
 	)

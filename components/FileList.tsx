@@ -31,7 +31,7 @@ const FileList = () => {
 	const [ loadingError, setLoadingError ] = useState<string | null>(null);
 	const { isLoaded, isSignedIn, user } = useUser();
 
-	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { id, setId, workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -43,10 +43,9 @@ const FileList = () => {
 			try{
 				if (!isLoaded || !isSignedIn || !user?.id) return;
 				const userId = user.id;
-				const activeDir = workingDir.split('/');
-				const curruntDir = activeDir.length > 0 ? activeDir[activeDir.length-1] : "";
+				const parentId = id ? id : '';
 
-				const response = await fetch(`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(curruntDir)}`);
+				const response = await fetch(`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`);
 				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
 				const body = await response.json();

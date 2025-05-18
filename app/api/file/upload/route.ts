@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
-const { ImageKit } = require('imagekit');
+import ImageKit from 'imagekit';
 const imageKit = new ImageKit({
-    publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT
+    publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+    urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!
 });
 
 export async function POST(request: NextRequest){
@@ -21,6 +21,11 @@ export async function POST(request: NextRequest){
         const file = formData.get("file") as File;
         const formUserId = formData.get("userId") as string;
         const formParentId = (formData.get("parentId") as string) || null;
+
+        console.log("-------------------------");
+        console.log(userId);
+        console.log(formUserId);
+        console.log("-------------------------");
 
         if(userId !== formUserId) return NextResponse.json({error: "Unauthorized" }, { status: 401 });
         if(!file) return NextResponse.json({ error: "No file provided." }, { status: 400 });

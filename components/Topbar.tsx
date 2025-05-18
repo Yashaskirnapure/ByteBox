@@ -7,23 +7,31 @@ import { useDirectory } from '@/context/DirectoryContext';
 import { UploadCloud } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function Topbar() {
-	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { id, setId, workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
 	const { isLoaded, isSignedIn, user } = useUser();
 
 	const fileRef = useRef<HTMLInputElement>(null);
 	const [ fileError, setFileError ] = useState<boolean>(false);
 	const [ errorMessage, setErrorMessage ] = useState<string | null>(null);
-	const [ success, setSuccess ] = useState<boolean>(false);
-	const [ successMessage, setSuccessMessage ] = useState<string | null>(null);
+	const [ newFolderName, setNewFolderName ] = useState<string>('');
+	const [ uploading, setUploading ] = useState<boolean>(false);
 
 	const handleUploadClick = () => { fileRef.current?.click(); }
 	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		setFileError(false);
 		setErrorMessage(null);
-		setSuccess(false);
-		setSuccessMessage(null);
 
 		try{
 			if(!isLoaded || !isSignedIn || !user?.id) return;
@@ -34,27 +42,65 @@ export default function Topbar() {
 				return;
 			}
 
+			setUploading(true);
+
 			const userId = user.id;
-			const path = workingDir.split('/');
-			const curruntDir = path.length === 0 ? '/' : path[path.length-1];
+			const parentId = id ? id : '';
 
 			const file = files[0];
 			const formData = new FormData();
 			formData.append('file', file);
+			formData.append('userId', userId);
+			if(id) formData.append('parentId', id);
 
 			const response = await fetch(
-				`http://localhost:3000/api/file/upload?userId=${encodeURIComponent(user.id)}&workingDir=${encodeURIComponent(curruntDir)}`,
+				`http://localhost:3000/api/file/upload?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`,
 				{
 					method: 'POST',
 					body: formData,
 				}
 			);
 			if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-			
+			toast("Upload successfull", {
+				description: "refreshing....",
+			});
 
 			incrementRefreshKey();
 		}catch(err: any){
 			setErrorMessage('Could not upload file.');
+			setFileError(true);
+		}finally{
+			setUploading(false);
+		}
+	}
+
+	const handleCreateFolder = async() => {
+		try{
+			if(!isLoaded || !isSignedIn || !user?.id) return;
+			const userId = user.id;
+			const filepath = workingDir.split('/');
+			const curruntDir = filepath.length === 0 ? '/' : filepath[filepath.length-1];
+
+			const response = await fetch(
+				'localhost:3000/api/folder',
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						name: newFolderName,
+						userId: userId,
+						parentId: id,
+					})
+				}
+			);
+
+			if(!response.ok) throw new Error("Could not create folder.");
+			toast("Folder created successfully", {
+				description: "refreshing....",
+			});
+
+			incrementRefreshKey();
+		}catch(err: any){
+			setErrorMessage('Could not create folder');
 			setFileError(true);
 		}
 	}
@@ -71,6 +117,16 @@ export default function Topbar() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">File Manager</h2>
 					<div className='flex justify-center items-center gap-2'>
+						{uploading && (
+							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
+								Uploading. Please wait..
+							</div>
+						)}
+						{fileError && (
+							<div className="bg-red-100 text-red-700 border border-red-400 px-4 py-2 rounded-md text-xs">
+								{errorMessage}
+							</div>
+						)}
 						<Input 
 							hidden
 							ref={fileRef}
@@ -86,7 +142,31 @@ export default function Topbar() {
 							<UploadCloud className="w-4 h-4 mr-2"/>
 							Upload
 						</Button>
-						<Button className='cursor-pointer text-xs'>Create Folder</Button>
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button className='cursor-pointer text-xs'>Create Folder</Button>
+							</DialogTrigger>
+							<DialogContent className="sm:max-w-[425px]">
+								<DialogHeader>
+									<DialogTitle>Create New Folder</DialogTitle>
+									<DialogDescription>
+										Name your new folder.
+									</DialogDescription>
+								</DialogHeader>
+								<Input
+									id="name"
+									placeholder='Untitled Folder'
+									className="col-span-4"
+									onChange={(e) => { setNewFolderName(e.target.value) }}
+								/>
+								<Button
+									className='cursor-pointer col-span-4'
+									onClick={handleCreateFolder}
+								>
+									Create
+								</Button>
+							</DialogContent>
+						</Dialog>
 					</div>
 				</div>
 			</div>
