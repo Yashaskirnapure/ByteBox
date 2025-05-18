@@ -6,27 +6,57 @@ import { Separator } from './ui/separator';
 import { useDirectory } from '@/context/DirectoryContext';
 import { UploadCloud } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 
 export default function Topbar() {
-	const { workingDir, setWorkingDir } = useDirectory();
+	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { isLoaded, isSignedIn, user } = useUser();
+
 	const fileRef = useRef<HTMLInputElement>(null);
-	const [ fileInputError, setFileInputError ] = useState<boolean>(false);
-	const [ error, setError ] = useState<string | null>(null);
+	const [ fileError, setFileError ] = useState<boolean>(false);
+	const [ errorMessage, setErrorMessage ] = useState<string | null>(null);
+	const [ success, setSuccess ] = useState<boolean>(false);
+	const [ successMessage, setSuccessMessage ] = useState<string | null>(null);
 
 	const handleUploadClick = () => { fileRef.current?.click(); }
 	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const files = event.target.files;
-		if(!files || files.length === 0){
-			setFileInputError(true);
-			setError("Please upload file");
-			return;
+		setFileError(false);
+		setErrorMessage(null);
+		setSuccess(false);
+		setSuccessMessage(null);
+
+		try{
+			if(!isLoaded || !isSignedIn || !user?.id) return;
+			const files = event.target.files;
+			if(!files || files.length === 0){
+				setFileError(true);
+				setErrorMessage("Please upload file");
+				return;
+			}
+
+			const userId = user.id;
+			const path = workingDir.split('/');
+			const curruntDir = path.length === 0 ? '/' : path[path.length-1];
+
+			const file = files[0];
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const response = await fetch(
+				`http://localhost:3000/api/file/upload?userId=${encodeURIComponent(user.id)}&workingDir=${encodeURIComponent(curruntDir)}`,
+				{
+					method: 'POST',
+					body: formData,
+				}
+			);
+			if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+			
+
+			incrementRefreshKey();
+		}catch(err: any){
+			setErrorMessage('Could not upload file.');
+			setFileError(true);
 		}
-
-		const file = files[0];
-		const formData = new FormData();
-		formData.append('file', file);
-
-		const response = await fetch(``)
 	}
 
 	return (
@@ -41,7 +71,13 @@ export default function Topbar() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">File Manager</h2>
 					<div className='flex justify-center items-center gap-2'>
-						<Input hidden ref={fileRef} id="file" type="file" />
+						<Input 
+							hidden
+							ref={fileRef}
+							id="file"
+							type="file"
+							onChange={handleFileChange}
+						/>
 						<Button
 							onClick={handleUploadClick}
 							className="cursor-pointer text-xs"

@@ -31,7 +31,7 @@ const FileList = () => {
 	const [ loadingError, setLoadingError ] = useState<string | null>(null);
 	const { isLoaded, isSignedIn, user } = useUser();
 
-	const { workingDir, setWorkingDir } = useDirectory();
+	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -46,7 +46,7 @@ const FileList = () => {
 				const activeDir = workingDir.split('/');
 				const curruntDir = activeDir.length > 0 ? activeDir[activeDir.length-1] : "";
 
-				const response = await fetch(`http://localhost:3000/api/file?userId=${encodeURIComponent(user.id)}&workingDir=${encodeURIComponent(curruntDir)}`);
+				const response = await fetch(`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(curruntDir)}`);
 				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
 				const body = await response.json();
@@ -58,8 +58,8 @@ const FileList = () => {
 				console.error("Error loading files", err);
 			}
 		}
-		fetchFiles();
-	}, [isLoaded, isSignedIn, workingDir, user]);
+		//fetchFiles();
+	}, [isLoaded, isSignedIn, workingDir, user, refreshKey]);
 
 	if(!isLoaded) return <h1>Loading....please wait</h1>
 	if(!isSignedIn) return null;
