@@ -18,10 +18,9 @@ import { useDirectory } from '@/context/DirectoryContext';
 
 interface FileInfo {
 	name: string,
-	location: string,
 	type: "folder" | "file",
 	owner: string,
-	last_modified: Date,
+	updatedAt: Date,
 	size: number
 };
 
@@ -30,6 +29,7 @@ const FileList = () => {
 	const [ isLoadingError, setIsLoadingError ] = useState<boolean>(false);
 	const [ loadingError, setLoadingError ] = useState<string | null>(null);
 	const { isLoaded, isSignedIn, user } = useUser();
+	const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
 	const { id, setId, workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
 	const router = useRouter();
@@ -41,6 +41,7 @@ const FileList = () => {
 	useEffect(() => {
 		const fetchFiles = async () => {
 			try{
+				setIsLoading(true);
 				if (!isLoaded || !isSignedIn || !user?.id) return;
 				const userId = user.id;
 				const parentId = id ? id : '';
@@ -55,9 +56,11 @@ const FileList = () => {
 				setIsLoadingError(true);
 				setLoadingError("Could not load files");
 				console.error("Error loading files", err);
+			}finally{
+				setIsLoading(false);
 			}
 		}
-		//fetchFiles();
+		fetchFiles();
 	}, [isLoaded, isSignedIn, workingDir, user, refreshKey]);
 
 	if(!isLoaded) return <h1>Loading....please wait</h1>
@@ -65,19 +68,19 @@ const FileList = () => {
 
 	return (
 		<div className="w-full h-full p-3 bg-gray-100">
-			{files.length === 0 ? (
-				<div className="text-muted-foreground">Nothing to show here</div>
+			{isLoading ? (
+				<div className="text-muted-foreground">Loading files...</div>
 			) : isLoadingError ? (
 				<div className="text-red-500">{loadingError}</div>
+			) : files.length === 0 ? (
+				<div className="text-muted-foreground">Nothing to show here</div>
 			) : (
 				<Card className="overflow-hidden bg-gray-100">
 					<CardContent className="p-0 divide-y">
 						<div className="grid grid-cols-6 text-sm text-muted-foreground px-4 pb-2">
-							<span className="col-span-2">File name</span>
-							<span>Location</span>
-							<span>Owner</span>
-							<span>Last modified</span>
-							<span className="text-right">File size</span>
+							<span className="col-span-2 text-center">File name</span>
+							<span className="col-span-2 text-center">File name</span>
+							<span className="col-span-2 text-center">File size</span>
 						</div>
 						{files.map((file, i) => (
 							<div
@@ -92,11 +95,10 @@ const FileList = () => {
 									)}
 									<span className="truncate">{file.name}</span>
 								</div>
-								<span className="truncate">{file.location}</span>
 								<div className="flex items-center gap-2">
 									<span>{file.owner}</span>
 								</div>
-								<span>{file.last_modified.toLocaleString()}</span>
+								<span>{new Date(file.updatedAt).toLocaleString()}</span>
 								<span className="text-right">{file.size}</span>
 							</div>
 						))}
@@ -105,7 +107,6 @@ const FileList = () => {
 			)}
 		</div>
 	);
-
 };
 
 export default FileList;
