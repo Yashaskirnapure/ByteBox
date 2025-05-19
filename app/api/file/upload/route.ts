@@ -22,11 +22,6 @@ export async function POST(request: NextRequest){
         const formUserId = formData.get("userId") as string;
         const formParentId = (formData.get("parentId") as string) || null;
 
-        console.log("-------------------------");
-        console.log(userId);
-        console.log(formUserId);
-        console.log("-------------------------");
-
         if(userId !== formUserId) return NextResponse.json({error: "Unauthorized" }, { status: 401 });
         if(!file) return NextResponse.json({ error: "No file provided." }, { status: 400 });
 

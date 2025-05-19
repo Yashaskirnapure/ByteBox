@@ -2,7 +2,7 @@ import React from 'react';
 import { SideBar } from '@/components/SideBar';
 import Topbar from '@/components/Topbar';
 import { Separator } from '@/components/ui/separator';
-import FileList from '@/components/FileList';
+import FileList from '@/components/FileTable/FileList';
 
 const Home = () => {
 	return (

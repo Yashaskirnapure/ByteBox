@@ -15,17 +15,11 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useDirectory } from '@/context/DirectoryContext';
-
-interface FileInfo {
-	name: string,
-	type: "folder" | "file",
-	owner: string,
-	updatedAt: Date,
-	size: number
-};
+import { FileData, columns } from './Columns';
+import { DataTable } from './DataTable';
 
 const FileList = () => {
-	const [ files, setFiles ] = useState<Array<FileInfo>>([]);
+	const [ files, setFiles ] = useState<Array<FileData>>([]);
 	const [ isLoadingError, setIsLoadingError ] = useState<boolean>(false);
 	const [ loadingError, setLoadingError ] = useState<string | null>(null);
 	const { isLoaded, isSignedIn, user } = useUser();
@@ -74,37 +68,7 @@ const FileList = () => {
 				<div className="text-red-500">{loadingError}</div>
 			) : files.length === 0 ? (
 				<div className="text-muted-foreground">Nothing to show here</div>
-			) : (
-				<Card className="overflow-hidden bg-gray-100">
-					<CardContent className="p-0 divide-y">
-						<div className="grid grid-cols-6 text-sm text-muted-foreground px-4 pb-2">
-							<span className="col-span-2 text-center">File name</span>
-							<span className="col-span-2 text-center">File name</span>
-							<span className="col-span-2 text-center">File size</span>
-						</div>
-						{files.map((file, i) => (
-							<div
-								key={i}
-								className="grid grid-cols-6 items-center px-4 py-3 text-xs hover:bg-muted transition cursor-pointer text-muted-foreground"
-							>
-								<div className="col-span-2 flex items-center gap-2">
-									{file.type === 'folder' ? (
-										<Folder className="w-4 h-4 text-yellow-500" />
-									) : (
-										<File className="w-4 h-4 text-gray-500" />
-									)}
-									<span className="truncate">{file.name}</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<span>{file.owner}</span>
-								</div>
-								<span>{new Date(file.updatedAt).toLocaleString()}</span>
-								<span className="text-right">{file.size}</span>
-							</div>
-						))}
-					</CardContent>
-				</Card>
-			)}
+			) : ( <DataTable columns={columns} data={files}/> )}
 		</div>
 	);
 };

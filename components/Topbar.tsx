@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from './ui/separator';
 import { useDirectory } from '@/context/DirectoryContext';
-import { UploadCloud } from 'lucide-react';
+import { UploadCloud, Trash } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { toast } from "sonner";
@@ -117,6 +117,13 @@ export default function Topbar() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">File Manager</h2>
 					<div className='flex justify-center items-center gap-2'>
+						<Button
+							className="cursor-pointer text-xs text-red-500 hover:text-red-500"
+							variant='outline'
+						>
+							<Trash className="w-4 h-4 mr-2"/>
+							Delete
+						</Button>
 						{uploading && (
 							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
 								Uploading. Please wait..
