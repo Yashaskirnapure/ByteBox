@@ -1,4 +1,4 @@
-import { pgTable, integer, text, boolean, uuid, varchar, date } from "drizzle-orm/pg-core";
+import { pgTable, integer, text, boolean, uuid, date } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const files = pgTable("files", {
