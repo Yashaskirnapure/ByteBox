@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function Topbar() {
-	const { id, setId, workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { workingDir, setWorkingDir, incrementRefreshKey, selectedFiles } = useDirectory();
 	const { isLoaded, isSignedIn, user } = useUser();
 
 	const fileRef = useRef<HTMLInputElement>(null);
@@ -45,13 +45,13 @@ export default function Topbar() {
 			setUploading(true);
 
 			const userId = user.id;
-			const parentId = id ? id : '';
+			const parentId = workingDir.id === null ? '' : workingDir.id;
 
 			const file = files[0];
 			const formData = new FormData();
 			formData.append('file', file);
 			formData.append('userId', userId);
-			if(id) formData.append('parentId', id);
+			if(parentId) formData.append('parentId', parentId);
 
 			const response = await fetch(
 				`http://localhost:3000/api/file/upload?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`,
@@ -61,10 +61,7 @@ export default function Topbar() {
 				}
 			);
 			if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-			toast("Upload successfull", {
-				description: "refreshing....",
-			});
-
+			toast("Upload successfull", { description: "refreshing....", });
 			incrementRefreshKey();
 		}catch(err: any){
 			setErrorMessage('Could not upload file.');
@@ -78,8 +75,7 @@ export default function Topbar() {
 		try{
 			if(!isLoaded || !isSignedIn || !user?.id) return;
 			const userId = user.id;
-			const filepath = workingDir.split('/');
-			const curruntDir = filepath.length === 0 ? '/' : filepath[filepath.length-1];
+			const curruntDir = workingDir.id !== null ? workingDir.name.split('/')[-1] : '/';
 
 			const response = await fetch(
 				'localhost:3000/api/folder',
@@ -88,21 +84,23 @@ export default function Topbar() {
 					body: JSON.stringify({
 						name: newFolderName,
 						userId: userId,
-						parentId: id,
+						parentId: workingDir.id,
 					})
 				}
 			);
 
 			if(!response.ok) throw new Error("Could not create folder.");
-			toast("Folder created successfully", {
-				description: "refreshing....",
-			});
-
+			toast("Folder created successfully", { description: "refreshing....", });
 			incrementRefreshKey();
 		}catch(err: any){
 			setErrorMessage('Could not create folder');
 			setFileError(true);
 		}
+	}
+
+	const handleDelete = async() => {
+		try{}
+		catch(err: any){}
 	}
 
 	return (

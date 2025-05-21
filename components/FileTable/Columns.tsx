@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
 
 export type FileData = {
+    id: string,
     name: string,
     createdAt: Date,
     updatedAt: Date,

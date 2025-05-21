@@ -3,17 +3,8 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Folder, File } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { useDirectory } from '@/context/DirectoryContext';
 import { FileData, columns } from './Columns';
 import { DataTable } from './DataTable';
@@ -25,7 +16,7 @@ const FileList = () => {
 	const { isLoaded, isSignedIn, user } = useUser();
 	const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
-	const { id, setId, workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -38,7 +29,7 @@ const FileList = () => {
 				setIsLoading(true);
 				if (!isLoaded || !isSignedIn || !user?.id) return;
 				const userId = user.id;
-				const parentId = id ? id : '';
+				const parentId = workingDir.id === null ? '' : workingDir.id;
 
 				const response = await fetch(`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`);
 				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);

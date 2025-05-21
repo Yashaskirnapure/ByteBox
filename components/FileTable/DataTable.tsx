@@ -1,6 +1,7 @@
 "use client"
 
-import * as React from "react"
+import React from "react";
+import { useEffect } from "react";
 import {
 	ColumnDef,
 	flexRender,
@@ -17,8 +18,10 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow
-} from "@/components/ui/table"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/table";
+import { FolderUp } from "lucide-react";
+import { useDirectory } from "@/context/DirectoryContext";
+import { FileData } from "./Columns";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[]
@@ -26,7 +29,8 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
-	const [rowSelection, setRowSelection] = React.useState({})
+	const [rowSelection, setRowSelection] = React.useState({});
+	const { workingDir, setWorkingDir, selectedFiles, setSelectedFiles } = useDirectory();
 
 	const table = useReactTable({
 		data,
@@ -40,7 +44,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel()
-	})
+	});
+
+	useEffect(() => {
+		const files = table.getSelectedRowModel().rows.map(r => r.original as FileData);
+		setSelectedFiles(files);
+	}, [rowSelection]);
 
 	return (
 		<div className="rounded-md border overflow-x-auto">
@@ -66,6 +75,15 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 					))}
 				</TableHeader>
 				<TableBody>
+					{workingDir.id === null ? 
+						null :
+						<TableRow className="text-muted-foreground">
+							<TableCell className="p-2 px-2"></TableCell>
+							<TableCell className="p-2 px-2"><FolderUp className="w-5 h-5" /></TableCell>
+							<TableCell className="p-2 px-2"></TableCell>
+							<TableCell className="p-2 px-2"></TableCell>
+						</TableRow>
+					}
 					{table.getRowModel().rows?.length ? (
 						table.getRowModel().rows.map((row) => (
 							<TableRow
@@ -81,6 +99,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 											minWidth: i === 0 ? "40px" : "100px"
 										}}
 									>
+
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
