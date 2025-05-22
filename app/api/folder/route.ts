@@ -29,6 +29,7 @@ export async function POST(request: NextRequest){
             if(!parentFolder) return NextResponse.json({error: "Parent folder not found" }, { status: 404 });
         }
 
+        console.log("here");
         const newFolderData = {
             id: uuidv4(),
             name: name.trim(),

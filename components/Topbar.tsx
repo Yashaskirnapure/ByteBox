@@ -23,10 +23,12 @@ export default function Topbar() {
 	const { isLoaded, isSignedIn, user } = useUser();
 
 	const fileRef = useRef<HTMLInputElement>(null);
+	const [ dialogOpen, setDialogOpen ] =  useState(false);
 	const [ fileError, setFileError ] = useState<boolean>(false);
 	const [ errorMessage, setErrorMessage ] = useState<string | null>(null);
 	const [ newFolderName, setNewFolderName ] = useState<string>('');
 	const [ uploading, setUploading ] = useState<boolean>(false);
+	const [ creating, setCreating ] = useState<boolean>(false);
 
 	const handleUploadClick = () => { fileRef.current?.click(); }
 	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,19 +74,24 @@ export default function Topbar() {
 	}
 
 	const handleCreateFolder = async() => {
+		setDialogOpen(false);
+		setErrorMessage(null);
+		setFileError(false);
+		setCreating(true);
+
 		try{
 			if(!isLoaded || !isSignedIn || !user?.id) return;
 			const userId = user.id;
 			const curruntDir = workingDir.id !== null ? workingDir.name.split('/')[-1] : '/';
 
 			const response = await fetch(
-				'localhost:3000/api/folder',
+				'http://localhost:3000/api/folder',
 				{
 					method: 'POST',
 					body: JSON.stringify({
 						name: newFolderName,
 						userId: userId,
-						parentId: workingDir.id,
+						parentID: workingDir.id,
 					})
 				}
 			);
@@ -93,8 +100,11 @@ export default function Topbar() {
 			toast("Folder created successfully", { description: "refreshing....", });
 			incrementRefreshKey();
 		}catch(err: any){
+			console.log(err);
 			setErrorMessage('Could not create folder');
 			setFileError(true);
+		}finally{
+			setCreating(false);
 		}
 	}
 
@@ -115,16 +125,14 @@ export default function Topbar() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">File Manager</h2>
 					<div className='flex justify-center items-center gap-2'>
-						<Button
-							className="cursor-pointer text-xs text-red-500 hover:text-red-500"
-							variant='outline'
-						>
-							<Trash className="w-4 h-4 mr-2"/>
-							Delete
-						</Button>
+						{creating && (
+							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
+								Creating folder. Please wait..
+							</div>
+						)}
 						{uploading && (
 							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
-								Uploading. Please wait..
+								Uploading file. Please wait..
 							</div>
 						)}
 						{fileError && (
@@ -132,6 +140,13 @@ export default function Topbar() {
 								{errorMessage}
 							</div>
 						)}
+						<Button
+							className="cursor-pointer text-xs text-red-500 hover:text-red-500"
+							variant='outline'
+						>
+							<Trash className="w-4 h-4 mr-2"/>
+							Delete
+						</Button>
 						<Input 
 							hidden
 							ref={fileRef}
@@ -147,7 +162,7 @@ export default function Topbar() {
 							<UploadCloud className="w-4 h-4 mr-2"/>
 							Upload
 						</Button>
-						<Dialog>
+						<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
 							<DialogTrigger asChild>
 								<Button className='cursor-pointer text-xs'>Create Folder</Button>
 							</DialogTrigger>
