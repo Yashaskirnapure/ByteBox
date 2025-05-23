@@ -26,7 +26,7 @@ export default function Topbar() {
 	const [ dialogOpen, setDialogOpen ] =  useState(false);
 	const [ fileError, setFileError ] = useState<boolean>(false);
 	const [ errorMessage, setErrorMessage ] = useState<string | null>(null);
-	const [ newFolderName, setNewFolderName ] = useState<string>('');
+	const [ newFolderName, setNewFolderName ] = useState<string | null>(null);
 	const [ uploading, setUploading ] = useState<boolean>(false);
 	const [ creating, setCreating ] = useState<boolean>(false);
 
@@ -81,8 +81,13 @@ export default function Topbar() {
 
 		try{
 			if(!isLoaded || !isSignedIn || !user?.id) return;
+
 			const userId = user.id;
-			const curruntDir = workingDir.id !== null ? workingDir.name.split('/')[-1] : '/';
+			if(!newFolderName || newFolderName.trim().length === 0){
+				setFileError(true);
+				setErrorMessage("Please provide name for creating folder.");
+				return;
+			}
 
 			const response = await fetch(
 				'http://localhost:3000/api/folder',
