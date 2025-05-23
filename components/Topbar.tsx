@@ -143,6 +143,7 @@ export default function Topbar() {
 						<Button
 							className="cursor-pointer text-xs text-red-500 hover:text-red-500"
 							variant='outline'
+							disabled={selectedFiles.length === 0}
 						>
 							<Trash className="w-4 h-4 mr-2"/>
 							Delete

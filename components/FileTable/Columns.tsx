@@ -49,13 +49,31 @@ export const columns: ColumnDef<FileData>[] = [
     {
         accessorKey: "createdAt",
         header: "Created At",
+        cell: ({ row }) => {
+            const file = row.original;
+            return (
+                <div>{file.type === 'file' ? file.createdAt.toLocaleDateString() : ""}</div>
+            )
+        }
     },
     {
         accessorKey: "updatedAt",
         header: "Updated At",
+        cell: ({ row }) => {
+            const file = row.original;
+            return (
+                <div>{file.type === 'file' ? file.updatedAt.toLocaleDateString() : ""}</div>
+            )
+        }
     },
     {
         accessorKey: "size",
         header: "size",
+        cell: ({ row }) => {
+            const file = row.original;
+            return (
+                <div>{file.type === 'file' ? file.size : ""}</div>
+            )
+        }
     },
 ]

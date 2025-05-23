@@ -40,7 +40,7 @@ export async function POST(request: NextRequest){
             thumbnailUrl: null,
             userID: userId,
             parentID,
-            ifFolder: true,
+            isFolder: true,
             isStarred: false,
             isTrash: false,
         };

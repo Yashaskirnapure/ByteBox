@@ -35,8 +35,19 @@ const FileList = () => {
 				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
 				const body = await response.json();
-				const content = body.content
-				setFiles(content);
+				const content = body.content;
+				console.log(content)
+				const normalized: FileData[] = content.map((item: any) => {
+					return {
+						id: item.id,
+						name: item.name,
+						type: item.isFolder === true ? "folder" : "file",
+						size: item.size,
+						createdAt: new Date(item.createdAt),
+						updatedAt: new Date(item.updatedAt),
+					}
+				});
+				setFiles(normalized);
 			}catch(err){
 				setIsLoadingError(true);
 				setLoadingError("Could not load files");
