@@ -2,6 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
+import { FileText, Folder } from "lucide-react";
 
 export type FileData = {
     id: string,
@@ -35,6 +36,15 @@ export const columns: ColumnDef<FileData>[] = [
     {
         accessorKey: "name",
         header: "Name",
+        cell: ({ row }) => {
+            const file = row.original;
+            return (
+                <div className="flex items-center gap-2">
+                    {file.type === 'folder' ? <Folder className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
+                    <span>{file.name}</span>
+                </div>
+            )
+        }
     },
     {
         accessorKey: "createdAt",

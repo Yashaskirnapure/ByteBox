@@ -99,7 +99,6 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 											minWidth: i === 0 ? "40px" : "100px"
 										}}
 									>
-
 										{flexRender(cell.column.columnDef.cell, cell.getContext())}
 									</TableCell>
 								))}
