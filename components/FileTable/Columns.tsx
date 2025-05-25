@@ -3,15 +3,17 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
 import { FileText, Folder } from "lucide-react";
+import { FileData } from "@/types/types";
 
-export type FileData = {
-    id: string,
-    name: string,
-    createdAt: Date,
-    updatedAt: Date,
-    type: "file" | "folder",
-    size: number,
-};
+function formatFileSize(bytes: number): string {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Bytes';
+
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const size = parseFloat((bytes / Math.pow(1024, i)).toFixed(2));
+
+    return `${size} ${sizes[i]}`;
+}
 
 export const columns: ColumnDef<FileData>[] = [
     {
@@ -72,7 +74,7 @@ export const columns: ColumnDef<FileData>[] = [
         cell: ({ row }) => {
             const file = row.original;
             return (
-                <div>{file.type === 'file' ? file.size : ""}</div>
+                <div>{file.type === 'file' ? formatFileSize(file.size) : ""}</div>
             )
         }
     },

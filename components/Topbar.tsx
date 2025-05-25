@@ -12,111 +12,36 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function Topbar() {
-	const { workingDir, setWorkingDir, incrementRefreshKey, selectedFiles } = useDirectory();
-	const { isLoaded, isSignedIn, user } = useUser();
+interface TopBarProps{
+	handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+	handleCreateFolder: () => void,
+	handleDelete: () => void,
+
+	deleting: boolean,
+	uploading: boolean,
+	creating: boolean,
+	errorMessage: string | null,
+	fileError: boolean,
+
+	newFolderName: string,
+	setNewFolderName: (name: string) => void,
+
+	dialogOpen: boolean,
+	setDialogOpen: (state: boolean) => void,
+
+	isSelected: boolean,
+}
+
+const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, handleDelete,
+	deleting, uploading, creating, errorMessage, fileError, newFolderName, setNewFolderName, dialogOpen, setDialogOpen, isSelected }) => {
 
 	const fileRef = useRef<HTMLInputElement>(null);
-	const [ dialogOpen, setDialogOpen ] =  useState(false);
-	const [ fileError, setFileError ] = useState<boolean>(false);
-	const [ errorMessage, setErrorMessage ] = useState<string | null>(null);
-	const [ newFolderName, setNewFolderName ] = useState<string | null>(null);
-	const [ uploading, setUploading ] = useState<boolean>(false);
-	const [ creating, setCreating ] = useState<boolean>(false);
-
 	const handleUploadClick = () => { fileRef.current?.click(); }
-	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		setFileError(false);
-		setErrorMessage(null);
-
-		try{
-			if(!isLoaded || !isSignedIn || !user?.id) return;
-			const files = event.target.files;
-			if(!files || files.length === 0){
-				setFileError(true);
-				setErrorMessage("Please upload file");
-				return;
-			}
-
-			setUploading(true);
-
-			const userId = user.id;
-			const parentId = workingDir.id === null ? '' : workingDir.id;
-
-			const file = files[0];
-			const formData = new FormData();
-			formData.append('file', file);
-			formData.append('userId', userId);
-			if(parentId) formData.append('parentId', parentId);
-
-			const response = await fetch(
-				`http://localhost:3000/api/file/upload?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`,
-				{
-					method: 'POST',
-					body: formData,
-				}
-			);
-			if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-			toast("Upload successfull", { description: "refreshing....", });
-			incrementRefreshKey();
-		}catch(err: any){
-			setErrorMessage('Could not upload file.');
-			setFileError(true);
-		}finally{
-			setUploading(false);
-		}
-	}
-
-	const handleCreateFolder = async() => {
-		setDialogOpen(false);
-		setErrorMessage(null);
-		setFileError(false);
-		setCreating(true);
-
-		try{
-			if(!isLoaded || !isSignedIn || !user?.id) return;
-
-			const userId = user.id;
-			if(!newFolderName || newFolderName.trim().length === 0){
-				setFileError(true);
-				setErrorMessage("Please provide name for creating folder.");
-				return;
-			}
-
-			const response = await fetch(
-				'http://localhost:3000/api/folder',
-				{
-					method: 'POST',
-					body: JSON.stringify({
-						name: newFolderName,
-						userId: userId,
-						parentID: workingDir.id,
-					})
-				}
-			);
-
-			if(!response.ok) throw new Error("Could not create folder.");
-			toast("Folder created successfully", { description: "refreshing....", });
-			incrementRefreshKey();
-		}catch(err: any){
-			console.log(err);
-			setErrorMessage('Could not create folder');
-			setFileError(true);
-		}finally{
-			setCreating(false);
-		}
-	}
-
-	const handleDelete = async() => {
-		try{}
-		catch(err: any){}
-	}
 
 	return (
 		<div>
@@ -130,6 +55,11 @@ export default function Topbar() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">File Manager</h2>
 					<div className='flex justify-center items-center gap-2'>
+						{deleting && (
+							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
+								Deleting. Please wait..
+							</div>
+						)}
 						{creating && (
 							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
 								Creating folder. Please wait..
@@ -148,7 +78,7 @@ export default function Topbar() {
 						<Button
 							className="cursor-pointer text-xs text-red-500 hover:text-red-500"
 							variant='outline'
-							disabled={selectedFiles.length === 0}
+							disabled={!isSelected}
 						>
 							<Trash className="w-4 h-4 mr-2"/>
 							Delete
@@ -199,3 +129,5 @@ export default function Topbar() {
 		</div>
 	);
 }
+
+export default Topbar;
