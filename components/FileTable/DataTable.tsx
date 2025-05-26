@@ -21,16 +21,17 @@ import {
 } from "@/components/ui/table";
 import { FolderUp } from "lucide-react";
 import { useDirectory } from "@/context/DirectoryContext";
-import { FileData } from "./Columns";
+import { FileData } from "@/types/types";
 
 interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[]
-	data: TData[]
+	columns: ColumnDef<TData, TValue>[],
+	data: TData[],
+	setSelectedFiles: (files: Array<FileData>) => void
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: DataTableProps<TData, TValue>) {
 	const [rowSelection, setRowSelection] = React.useState({});
-	const { workingDir, setWorkingDir, selectedFiles, setSelectedFiles } = useDirectory();
+	const { workingDir, setWorkingDir } = useDirectory();
 
 	const table = useReactTable({
 		data,

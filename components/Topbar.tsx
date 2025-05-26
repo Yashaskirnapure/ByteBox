@@ -35,10 +35,13 @@ interface TopBarProps{
 	setDialogOpen: (state: boolean) => void,
 
 	isSelected: boolean,
+
+	searchQuery: string,
+	setSearchQuery: (s: string) => void,
 }
 
-const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, handleDelete,
-	deleting, uploading, creating, errorMessage, fileError, newFolderName, setNewFolderName, dialogOpen, setDialogOpen, isSelected }) => {
+const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, handleDelete, deleting, uploading, creating,
+	errorMessage, fileError, newFolderName, setNewFolderName, dialogOpen, setDialogOpen, isSelected, searchQuery, setSearchQuery }) => {
 
 	const fileRef = useRef<HTMLInputElement>(null);
 	const handleUploadClick = () => { fileRef.current?.click(); }
@@ -47,7 +50,12 @@ const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, h
 		<div>
 			<div className="px-4 py-2 space-y-2">
 				<div className="flex justify-between items-center">
-					<Input placeholder="Search files..." className="w-1/3" />
+					<Input
+						placeholder="Search files..."
+						className="w-1/3"
+						value={searchQuery}
+						onChange={(e) => { setSearchQuery(e.target.value) }}
+					/>
 				</div>
 			</div>
 			<Separator/>

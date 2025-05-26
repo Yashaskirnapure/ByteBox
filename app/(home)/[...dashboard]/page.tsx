@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { SideBar } from '@/components/SideBar';
 import Topbar from '@/components/Topbar';
@@ -28,6 +30,17 @@ const Home = () => {
 	const [ deleting, setDeleting ] = useState<boolean>(false);
 	const [ dialogOpen, setDialogOpen ] =  useState<boolean>(false);
 
+	const [ searchQuery, setSearchQuery ] = useState<string>('');
+
+	//search filtering
+	useEffect(() => {
+		const searchResults = files.filter((file) => {
+			return file.name.toLowerCase().startsWith(searchQuery);
+		});
+		setDisplayFiles(searchResults);
+	}, [ searchQuery ])
+
+	//reloading the files on creation, updation, deletion
 	useEffect(() => {
 		const fetchFiles = async () => {
 			try{
@@ -53,6 +66,7 @@ const Home = () => {
 					}
 				});
 				setFiles(normalized);
+				setDisplayFiles(normalized);
 			}catch(err){
 				setIsLoadingError(true);
 				setLoadingError("Could not load files");
@@ -187,6 +201,8 @@ const Home = () => {
 					dialogOpen={dialogOpen}
 					setDialogOpen={setDialogOpen}
 					isSelected={selectedFiles.length > 0}
+					searchQuery={searchQuery}
+					setSearchQuery={setSearchQuery}
 				/>
 				<Separator/>
 				<FileList 
