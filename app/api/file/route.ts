@@ -16,8 +16,8 @@ export async function GET(request: NextRequest){
         if(queryUserId !== userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
         
         let folderContent;
-        if(queryParentId) folderContent = await db.select().from(files).where(and(eq(files.userID, queryUserId), eq(files.parentID, queryParentId)));
-        else folderContent = await db.select().from(files).where(and(eq(files.userID, queryUserId), isNull(files.parentID)));
+        if(queryParentId) folderContent = await db.select().from(files).where(and(eq(files.isTrash, false), eq(files.userID, queryUserId), eq(files.parentID, queryParentId)));
+        else folderContent = await db.select().from(files).where(and(eq(files.isTrash, false), eq(files.userID, queryUserId), isNull(files.parentID)));
 
         return NextResponse.json({ success: true, content: folderContent }, { status: 200 });
     }catch(err: any){

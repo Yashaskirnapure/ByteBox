@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: Da
 								<TableHead
 									key={header.id}
 									style={{
-										width: i === 0 ? "40px" : i === 1 ? "40%" : "20%",
+										width: i === 0 ? "40px" : i === 1 ? "30%" : "20%",
 										minWidth: i === 0 ? "40px" : "100px"
 									}}
 								>

@@ -2,8 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
-import { FileText, Folder } from "lucide-react";
+import { FileText, Folder, Star } from "lucide-react";
 import { FileData } from "@/types/types";
+import { Button } from "../ui/button";
 
 function formatFileSize(bytes: number): string {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -43,7 +44,7 @@ export const columns: ColumnDef<FileData>[] = [
             return (
                 <div className="flex items-center gap-2">
                     {file.type === 'folder' ? <Folder className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
-                    <span>{file.name}</span>
+                    <span>{file.name.length > 60 ? `${file.name.substring(0, 60)}.........` : file.name}</span>
                 </div>
             )
         }
@@ -70,7 +71,7 @@ export const columns: ColumnDef<FileData>[] = [
     },
     {
         accessorKey: "size",
-        header: "size",
+        header: "Size",
         cell: ({ row }) => {
             const file = row.original;
             return (

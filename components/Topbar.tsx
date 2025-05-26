@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from './ui/separator';
 import { useDirectory } from '@/context/DirectoryContext';
-import { UploadCloud, Trash } from 'lucide-react';
+import { UploadCloud, Trash, Star } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { toast } from "sonner";
@@ -21,6 +21,7 @@ interface TopBarProps{
 	handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 	handleCreateFolder: () => void,
 	handleDelete: () => void,
+	handleStar: () => void,
 
 	deleting: boolean,
 	uploading: boolean,
@@ -38,10 +39,13 @@ interface TopBarProps{
 
 	searchQuery: string,
 	setSearchQuery: (s: string) => void,
+
+	clicked: boolean,
+	setClicked: (val: boolean) => void,
 }
 
-const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, handleDelete, deleting, uploading, creating,
-	errorMessage, fileError, newFolderName, setNewFolderName, dialogOpen, setDialogOpen, isSelected, searchQuery, setSearchQuery }) => {
+const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, handleDelete, handleStar, deleting, uploading, creating,
+	errorMessage, fileError, newFolderName, setNewFolderName, dialogOpen, setDialogOpen, isSelected, searchQuery, setSearchQuery, clicked }) => {
 
 	const fileRef = useRef<HTMLInputElement>(null);
 	const handleUploadClick = () => { fileRef.current?.click(); }
@@ -84,9 +88,19 @@ const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, h
 							</div>
 						)}
 						<Button
+							className="cursor-pointer text-xs"
+							variant='outline'
+							disabled={!isSelected || clicked}
+							onClick={handleStar}
+						>
+							<Star className="w-4 h-4 mr-2"/>
+							Add to Favourites
+						</Button>
+						<Button
 							className="cursor-pointer text-xs text-red-500 hover:text-red-500"
 							variant='outline'
-							disabled={!isSelected}
+							disabled={!isSelected || clicked}
+							onClick={handleDelete}
 						>
 							<Trash className="w-4 h-4 mr-2"/>
 							Delete

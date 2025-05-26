@@ -28,19 +28,16 @@ const Home = () => {
 	const [ uploading, setUploading ] = useState<boolean>(false);
 	const [ creating, setCreating ] = useState<boolean>(false);
 	const [ deleting, setDeleting ] = useState<boolean>(false);
+	const [ starring, setStarring ] = useState<boolean>(false);
 	const [ dialogOpen, setDialogOpen ] =  useState<boolean>(false);
-
 	const [ searchQuery, setSearchQuery ] = useState<string>('');
+	const [ clicked, setClicked ] = useState<boolean>(false);
 
-	//search filtering
 	useEffect(() => {
-		const searchResults = files.filter((file) => {
-			return file.name.toLowerCase().startsWith(searchQuery);
-		});
+		const searchResults = files.filter((file) => { return file.name.toLowerCase().includes(searchQuery); });
 		setDisplayFiles(searchResults);
 	}, [ searchQuery ])
 
-	//reloading the files on creation, updation, deletion
 	useEffect(() => {
 		const fetchFiles = async () => {
 			try{
@@ -49,7 +46,9 @@ const Home = () => {
 				const userId = user.id;
 				const parentId = workingDir.id === null ? '' : workingDir.id;
 
-				const response = await fetch(`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`);
+				const response = await fetch(
+					`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`
+				);
 				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
 				const body = await response.json();
@@ -77,6 +76,23 @@ const Home = () => {
 		}
 		fetchFiles();
 	}, [isLoaded, isSignedIn, workingDir, user, refreshKey]);
+
+	const handleStar = async() => {
+		setFileError(false);
+		setErrorMessage(null);
+		setClicked(true);
+		setStarring(true);
+
+		try{
+
+		}catch(err: any){
+			setFileError(true);
+			setErrorMessage("Could not add files to favourites.");
+		}finally{
+			setClicked(false);
+			setStarring(false);
+		}
+	}
 
 	const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
 		setFileError(false);
@@ -161,25 +177,30 @@ const Home = () => {
 	const handleDelete = async() => {
 		setFileError(false);
 		setErrorMessage(null);
-
+		setClicked(true);
 		try{
 			setDeleting(true);
 			if(!isLoaded || !isSignedIn || !user?.id) return;
 			const userId = user.id;
+
+			const fileIds = selectedFiles.map(file => file.id);
 			const response = await fetch(
-				`http://localhost:3000/api/file?userId=${userId}`,
+				`http://localhost:3000/api/file/trash?userId=${userId}`,
 				{
-					method: 'POST',
-					body: JSON.stringify({ fileIds: selectedFiles })
+					method: 'PATCH',
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ fileIds })
 				}
 			)
-		}
-		catch(err: any){
+			if(!response.ok) throw new Error("Could not move to trash.");
+			incrementRefreshKey();
+		}catch(err: any){
 			console.log("Could not delete. ", err);
 			setFileError(true);
 			setErrorMessage("Could not delete the files.");
 		}finally{
 			setDeleting(false);
+			setClicked(false);
 		}
 	}
 
@@ -203,6 +224,9 @@ const Home = () => {
 					isSelected={selectedFiles.length > 0}
 					searchQuery={searchQuery}
 					setSearchQuery={setSearchQuery}
+					handleStar={handleStar}
+					clicked={clicked}
+					setClicked={setClicked}
 				/>
 				<Separator/>
 				<FileList 
