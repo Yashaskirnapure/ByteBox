@@ -3,11 +3,8 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from './ui/separator';
-import { useDirectory } from '@/context/DirectoryContext';
 import { UploadCloud, Trash, Star } from 'lucide-react';
-import { useRef, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
-import { toast } from "sonner";
+import { useRef } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -80,11 +77,6 @@ const Topbar: React.FC<TopBarProps> = ({ handleFileChange, handleCreateFolder, h
 						{uploading && (
 							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
 								Uploading file. Please wait..
-							</div>
-						)}
-						{fileError && (
-							<div className="bg-red-100 text-red-700 border border-red-400 px-4 py-2 rounded-md text-xs">
-								{errorMessage}
 							</div>
 						)}
 						<Button

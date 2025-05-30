@@ -6,12 +6,16 @@ import Topbar from '@/components/Topbar';
 import { Separator } from '@/components/ui/separator';
 import FileList from '@/components/FileTable/FileList';
 import { useState, useEffect } from 'react';
-import { FileData, FolderData } from '@/types/types';
+import { FileData } from '@/types/types';
 import { useUser } from '@clerk/nextjs';
 import { useDirectory } from '@/context/DirectoryContext';
+import { NextResponse } from 'next/server';
+import { toast } from "sonner";
+import { useDirectoryNavigation } from '@/context/DirectoryNavigationContext';
 
 const Home = () => {
-	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { refreshKey, incrementRefreshKey } = useDirectory();
+	const { workingDir, setWorkingDir, moveUp } = useDirectoryNavigation();
 	const { isLoaded, isSignedIn, user } = useUser();
 
 	const [ selectedFiles, setSelectedFiles ] = useState<Array<FileData>>([]);
@@ -36,7 +40,7 @@ const Home = () => {
 	useEffect(() => {
 		const searchResults = files.filter((file) => { return file.name.toLowerCase().includes(searchQuery); });
 		setDisplayFiles(searchResults);
-	}, [ searchQuery ])
+	}, [ searchQuery ]);
 
 	useEffect(() => {
 		const fetchFiles = async () => {
@@ -44,16 +48,16 @@ const Home = () => {
 				setIsLoading(true);
 				if (!isLoaded || !isSignedIn || !user?.id) return;
 				const userId = user.id;
-				const parentId = workingDir.id === null ? '' : workingDir.id;
+				const workingDirParam = workingDir.id ?? '';
 
 				const response = await fetch(
-					`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(parentId)}`
+					`http://localhost:3000/api/file?userId=${encodeURIComponent(userId)}&workingDir=${encodeURIComponent(workingDirParam)}`
 				);
 				if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
 				const body = await response.json();
 				const content = body.content;
-				console.log(content)
+				console.log(content);
 				const normalized: FileData[] = content.map((item: any) => {
 					return {
 						id: item.id,
@@ -62,13 +66,15 @@ const Home = () => {
 						size: item.size,
 						createdAt: new Date(item.createdAt),
 						updatedAt: new Date(item.updatedAt),
+						fileUrl: item.fileUrl,
+						parentId: item.parentID
 					}
 				});
 				setFiles(normalized);
 				setDisplayFiles(normalized);
 			}catch(err){
 				setIsLoadingError(true);
-				setLoadingError("Could not load files");
+				toast.error("Could not load files");
 				console.error("Error loading files", err);
 			}finally{
 				setIsLoading(false);
@@ -84,10 +90,21 @@ const Home = () => {
 		setStarring(true);
 
 		try{
+			if(!isLoaded || !isSignedIn || !user?.id) return;
+			const userId = user.id;
+			const fileIds = selectedFiles.map(file => file.id);
+			const response = await fetch(
+				`http://localhost:3000/api/file/star?userId=${userId}`,
+				{
+					method: "PATCH",
+					body: JSON.stringify({ fileIds }),
+				}
+			);
 
+			if(!response.ok) throw new Error("Could not star files.");
 		}catch(err: any){
 			setFileError(true);
-			setErrorMessage("Could not add files to favourites.");
+			toast.error("Could not add files to favourites.");
 		}finally{
 			setClicked(false);
 			setStarring(false);
@@ -103,20 +120,20 @@ const Home = () => {
 			const files = event.target.files;
 			if(!files || files.length === 0){
 				setFileError(true);
-				setErrorMessage("Please upload file");
+				toast.error("Please upload file");
 				return;
 			}
 
 			setUploading(true);
 
 			const userId = user.id;
-			const parentId = workingDir.id === null ? '' : workingDir.id;
+			const workingDirParam = workingDir.id ?? '';
 
 			const file = files[0];
 			const formData = new FormData();
 			formData.append('file', file);
 			formData.append('userId', userId);
-			if(parentId) formData.append('parentId', parentId);
+			if(workingDirParam) formData.append('parentId', workingDirParam);
 
 			const response = await fetch(
 				`http://localhost:3000/api/file/upload`,
@@ -128,7 +145,7 @@ const Home = () => {
 			if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 			incrementRefreshKey();
 		}catch(err: any){
-			setErrorMessage('Could not upload file.');
+			toast.error('Could not upload file.');
 			setFileError(true);
 		}finally{
 			setUploading(false);
@@ -158,7 +175,7 @@ const Home = () => {
 					body: JSON.stringify({
 						name: newFolderName,
 						userId: userId,
-						parentID: workingDir.id,
+						parentID: workingDir,
 					})
 				}
 			);
@@ -167,7 +184,7 @@ const Home = () => {
 			incrementRefreshKey();
 		}catch(err: any){
 			console.log(err);
-			setErrorMessage('Could not create folder');
+			toast.error('Could not create folder');
 			setFileError(true);
 		}finally{
 			setCreating(false);
@@ -197,7 +214,7 @@ const Home = () => {
 		}catch(err: any){
 			console.log("Could not delete. ", err);
 			setFileError(true);
-			setErrorMessage("Could not delete the files.");
+			toast.error("Could not delete the files.");
 		}finally{
 			setDeleting(false);
 			setClicked(false);

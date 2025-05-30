@@ -11,7 +11,7 @@ export async function GET(request: NextRequest){
 
         const searchParams = request.nextUrl.searchParams;
         const queryUserId = searchParams.get("userId");
-        const queryParentId = (searchParams.get("parentId") as string) || null;
+        const queryParentId = (searchParams.get("workingDir") as string) || null;
 
         if(queryUserId !== userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
         

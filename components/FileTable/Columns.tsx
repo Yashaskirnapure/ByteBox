@@ -4,15 +4,13 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../ui/checkbox";
 import { FileText, Folder, Star } from "lucide-react";
 import { FileData } from "@/types/types";
-import { Button } from "../ui/button";
+import { useDirectoryNavigation } from "@/context/DirectoryNavigationContext";
 
 function formatFileSize(bytes: number): string {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) return '0 Bytes';
-
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     const size = parseFloat((bytes / Math.pow(1024, i)).toFixed(2));
-
     return `${size} ${sizes[i]}`;
 }
 
@@ -41,10 +39,22 @@ export const columns: ColumnDef<FileData>[] = [
         header: "Name",
         cell: ({ row }) => {
             const file = row.original;
+            const { setWorkingDir } = useDirectoryNavigation();
             return (
-                <div className="flex items-center gap-2">
-                    {file.type === 'folder' ? <Folder className="w-4 h-4" /> : <FileText className="w-4 h-4" />}
-                    <span>{file.name.length > 60 ? `${file.name.substring(0, 60)}.........` : file.name}</span>
+                <div>
+                    {
+                        file.type === 'folder' ?
+                            <div className="flex items-center gap-2 cursor-pointer" onClick={(e) => { setWorkingDir({ id: file.id, name: file.name }) }}>
+                                <Folder className="w-4 h-4" />
+                                <span>{file.name.length > 60 ? `${file.name.substring(0, 60)}.........` : file.name}</span>
+                            </div> :
+                        <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
+                            <div className="flex items-center gap-2">
+                                    <FileText className="w-4 h-4" />
+                                    <span>{file.name.length > 60 ? `${file.name.substring(0, 60)}.........` : file.name}</span>
+                            </div>
+                        </a>
+                    }
                 </div>
             )
         }

@@ -36,8 +36,6 @@ const FileList: React.FC<FileListProps> = ({ displayFiles, selectedFiles, setSel
 				<div className="text-muted-foreground">Loading files...</div>
 			) : isLoadingError ? (
 				<div className="text-red-500">{loadingError}</div>
-			) : displayFiles.length === 0 ? (
-				<div className="text-muted-foreground">Nothing to show here</div>
 			) : ( <DataTable<FileData, unknown> columns={columns} data={displayFiles} setSelectedFiles={setSelectedFiles}/> )}
 		</div>
 	);

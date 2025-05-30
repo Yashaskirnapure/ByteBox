@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import { FolderUp } from "lucide-react";
 import { useDirectory } from "@/context/DirectoryContext";
+import { useDirectoryNavigation } from "@/context/DirectoryNavigationContext";
 import { FileData } from "@/types/types";
 
 interface DataTableProps<TData, TValue> {
@@ -31,14 +32,13 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: DataTableProps<TData, TValue>) {
 	const [rowSelection, setRowSelection] = React.useState({});
-	const { workingDir, setWorkingDir } = useDirectory();
+	const { refreshKey, incrementRefreshKey } = useDirectory();
+	const { workingDir, setWorkingDir, moveUp } = useDirectoryNavigation();
 
 	const table = useReactTable({
 		data,
 		columns,
-		state: {
-			rowSelection
-		},
+		state: { rowSelection },
 		enableRowSelection: true,
 		onRowSelectionChange: setRowSelection,
 		getCoreRowModel: getCoreRowModel(),
@@ -80,7 +80,9 @@ export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: Da
 						null :
 						<TableRow className="text-muted-foreground">
 							<TableCell className="p-2 px-2"></TableCell>
-							<TableCell className="p-2 px-2"><FolderUp className="w-5 h-5" /></TableCell>
+							<TableCell className="p-2 px-2">
+								<FolderUp className="w-5 h-5 cursor-pointer" onClick={(e) => { moveUp() } }/>
+							</TableCell>
 							<TableCell className="p-2 px-2"></TableCell>
 							<TableCell className="p-2 px-2"></TableCell>
 						</TableRow>

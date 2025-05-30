@@ -31,8 +31,17 @@ export async function POST(request: NextRequest){
             if(!parentFolder) return NextResponse.json({ error: "Parent folder does not exist" }, { status: 404 });
         }
 
-        if(!file.type.startsWith('/image') && file.type !== 'application/pdf')
-            return NextResponse.json({ error: "Only images allowed." }, { status: 400 });
+        const allowedTypes = [
+            'application/pdf',
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
+        ];
+
+        if (!allowedTypes.includes(file.type)) return NextResponse.json({ error: "Unsupported file type." }, { status: 400 });
 
         const buffer = await file.arrayBuffer()
         const fileBuffer = Buffer.from(buffer);

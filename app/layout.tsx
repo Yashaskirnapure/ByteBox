@@ -4,6 +4,8 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css';
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { DirectoryContextProvider } from '@/context/DirectoryContext';
+import { DirectoryNavigationProvider } from '@/context/DirectoryNavigationContext';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -29,11 +31,14 @@ export default function RootLayout({
 		<ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
 			<SidebarProvider>
 				<DirectoryContextProvider>
-					<html lang="en">
-						<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-							{children}
-						</body>
-					</html>
+					<DirectoryNavigationProvider>
+						<html lang="en">
+							<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+								{children}
+								<Toaster richColors position="top-right" />
+							</body>
+						</html>
+					</DirectoryNavigationProvider>
 				</DirectoryContextProvider>
 			</SidebarProvider>
 		</ClerkProvider>
