@@ -57,7 +57,6 @@ const Home = () => {
 
 				const body = await response.json();
 				const content = body.content;
-				console.log(content);
 				const normalized: FileData[] = content.map((item: any) => {
 					return {
 						id: item.id,
@@ -175,7 +174,7 @@ const Home = () => {
 					body: JSON.stringify({
 						name: newFolderName,
 						userId: userId,
-						parentID: workingDir,
+						parentID: workingDir.id,
 					})
 				}
 			);
@@ -246,7 +245,7 @@ const Home = () => {
 					setClicked={setClicked}
 				/>
 				<Separator/>
-				<FileList 
+				<FileList
 					displayFiles={displayFiles}
 					selectedFiles={selectedFiles}
 					setSelectedFiles={setSelectedFiles}

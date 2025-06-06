@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { files } from "@/src/db/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 import { db } from "@/src/db";
 
 export async function PATCH(request: NextRequest){
@@ -16,9 +16,21 @@ export async function PATCH(request: NextRequest){
 
         const requestBody = await request.json();
         const { fileIds } = requestBody;
-        console.log(fileIds[0]);
         if(!Array.isArray(fileIds) || fileIds.length === 0) return NextResponse.json({ message: "Bad Request" }, { status: 400 });
-        const [ response ] = await db.update(files).set({ isTrash: true }).where(and(eq(files.userID, userId), inArray(files.id, fileIds))).returning();
+        const formattedArray = `'{"${fileIds.join('","')}"}'`;
+
+        await db.execute(sql`
+        WITH RECURSIVE all_items AS (
+            SELECT id FROM files WHERE id = ANY(${sql.raw(`${formattedArray}::uuid[]`)}) AND "userID" = ${userId}
+            UNION
+            SELECT f.id FROM files f
+            INNER JOIN all_items ai ON f."parentID" = ai.id
+            WHERE f."userID" = ${userId}
+        )
+        UPDATE files
+        SET "isTrash" = true
+        WHERE id IN (SELECT id FROM all_items)
+        `);
 
         return NextResponse.json({ success: true, message: "Moved to trash" }, { status: 200 });
     }catch(err: any){

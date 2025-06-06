@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useDirectory } from '@/context/DirectoryContext';
@@ -19,7 +19,7 @@ interface FileListProps {
 }
 
 const FileList: React.FC<FileListProps> = ({ displayFiles, selectedFiles, setSelectedFiles, isLoading, isLoadingError, loadingError}) => {
-	const { workingDir, setWorkingDir, refreshKey, incrementRefreshKey } = useDirectory();
+	const { refreshKey, incrementRefreshKey } = useDirectory();
 	const { isLoaded, isSignedIn, user } = useUser();
 	const router = useRouter();
 
@@ -36,7 +36,7 @@ const FileList: React.FC<FileListProps> = ({ displayFiles, selectedFiles, setSel
 				<div className="text-muted-foreground">Loading files...</div>
 			) : isLoadingError ? (
 				<div className="text-red-500">{loadingError}</div>
-			) : ( <DataTable<FileData, unknown> columns={columns} data={displayFiles} setSelectedFiles={setSelectedFiles}/> )}
+			) : ( <DataTable<FileData, unknown> columns={columns} data={displayFiles} setSelectedFiles={setSelectedFiles} /> )}
 		</div>
 	);
 };

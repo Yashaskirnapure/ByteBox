@@ -3,7 +3,7 @@
 import { DirectoryStack, DirectoryStackItem } from "@/types/types";
 import React, { useState, useRef, createContext, useContext } from "react";
 
-interface DirectoryNavigationContextType{
+interface TrashNavigationContextType{
     workingDir: DirectoryStackItem,
     setWorkingDir: (dir: DirectoryStackItem) => void,
     moveUp: () => void,
@@ -14,8 +14,8 @@ const ROOT_FOLDER = {
     name: 'root',
 }
 
-const DirectoryNavigationContext = createContext<DirectoryNavigationContextType | undefined> (undefined);
-export const DirectoryNavigationProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+const TrashNavigationContext = createContext<TrashNavigationContextType | undefined> (undefined);
+export const TrashNavigationProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
     const stackRef = useRef(new DirectoryStack([ROOT_FOLDER]));
     const [ workingDir, setWorkingDirState ] = useState<DirectoryStackItem>(ROOT_FOLDER);
 
@@ -32,14 +32,14 @@ export const DirectoryNavigationProvider: React.FC<{children: React.ReactNode}> 
     }
 
     return (
-        <DirectoryNavigationContext.Provider value={{ workingDir, setWorkingDir, moveUp }}>
-			{children}
-		</DirectoryNavigationContext.Provider>
+        <TrashNavigationContext.Provider value={{ workingDir, setWorkingDir, moveUp }}>
+            {children}
+        </TrashNavigationContext.Provider>
     )
 }
 
-export const useDirectoryNavigation = () => {
-    const context = useContext(DirectoryNavigationContext);
-    if(!context) throw new Error("Could not create file manager navigation context");
+export const useTrashNavigation = () => {
+    const context = useContext(TrashNavigationContext);
+    if(!context) throw new Error("Could not create trash navigation context");
     return context;
 }

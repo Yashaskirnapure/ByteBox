@@ -27,7 +27,7 @@ import { FileData } from "@/types/types";
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[],
 	data: TData[],
-	setSelectedFiles: (files: Array<FileData>) => void
+	setSelectedFiles: (files: Array<FileData>) => void,
 }
 
 export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: DataTableProps<TData, TValue>) {

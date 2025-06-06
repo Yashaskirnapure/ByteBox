@@ -5,6 +5,7 @@ import './globals.css';
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { DirectoryContextProvider } from '@/context/DirectoryContext';
 import { DirectoryNavigationProvider } from '@/context/DirectoryNavigationContext';
+import { TrashNavigationProvider } from '@/context/TrashNavigationContext';
 import { Toaster } from 'sonner';
 
 const geistSans = Geist({
@@ -32,12 +33,14 @@ export default function RootLayout({
 			<SidebarProvider>
 				<DirectoryContextProvider>
 					<DirectoryNavigationProvider>
+						<TrashNavigationProvider>
 						<html lang="en">
 							<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 								{children}
 								<Toaster richColors position="top-right" />
 							</body>
 						</html>
+						</TrashNavigationProvider>
 					</DirectoryNavigationProvider>
 				</DirectoryContextProvider>
 			</SidebarProvider>

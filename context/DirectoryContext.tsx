@@ -4,7 +4,6 @@ import React, { useState, createContext, useContext } from 'react';
 interface DirectoryContextType {
 	refreshKey: number,
 	incrementRefreshKey: () => void,
-
 }
 
 const DirectoryContext = createContext<DirectoryContextType | undefined> (undefined);
