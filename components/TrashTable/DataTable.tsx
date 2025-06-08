@@ -32,7 +32,6 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
-    const { refreshKey, incrementRefreshKey } = useDirectory();
     const { workingDir, setWorkingDir, moveUp } = useTrashNavigation();
 
     const table = useReactTable({
@@ -61,10 +60,6 @@ export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: Da
                             {headerGroup.headers.map((header, i) => (
                                 <TableHead
                                     key={header.id}
-                                    style={{
-                                        width: i === 0 ? "40px" : i === 1 ? "30%" : "20%",
-                                        minWidth: i === 0 ? "40px" : "100px"
-                                    }}
                                 >
                                     {header.isPlaceholder ? null : flexRender(
                                         header.column.columnDef.header,
@@ -83,8 +78,6 @@ export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: Da
                             <TableCell className="p-2 px-2">
                                 <FolderUp className="w-5 h-5 cursor-pointer" onClick={(e) => { moveUp() } }/>
                             </TableCell>
-                            <TableCell className="p-2 px-2"></TableCell>
-                            <TableCell className="p-2 px-2"></TableCell>
                         </TableRow>
                     }
                     {table.getRowModel().rows?.length ? (
@@ -97,10 +90,6 @@ export function DataTable<TData, TValue>({ columns, data, setSelectedFiles }: Da
                                 {row.getVisibleCells().map((cell, i) => (
                                     <TableCell
                                         key={cell.id}
-                                        style={{
-                                            width: i === 0 ? "40px" : i === 1 ? "50%" : "auto",
-                                            minWidth: i === 0 ? "40px" : "100px"
-                                        }}
                                     >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>

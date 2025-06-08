@@ -11,6 +11,7 @@ import { Trash, Brush, Undo } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { useDirectory } from '@/context/DirectoryContext';
+import { useTrashNavigation } from '@/context/TrashNavigationContext';
 
 const TrashPage = () => {
 	const [ files, setFiles ] = useState<FileData[]>([]);
@@ -20,15 +21,18 @@ const TrashPage = () => {
 	const [ isLoadingError, setIsLoadingError ] = useState<boolean>(false);
 	const [ loadingError, setLoadingError ] = useState<string | null> (null);
 	const { isLoaded, isSignedIn, user } = useUser();
+
 	const { refreshKey, incrementRefreshKey } = useDirectory();
+	const { workingDir, setWorkingDir } = useTrashNavigation();
 
 	useEffect(() => {
 		const fetchFiles = async () => {
 			try{
 				if(!isLoaded || !isSignedIn || !user?.id) return;
 				setIsLoading(true);
-
-				const response = await fetch(`http://localhost:3000/api/trash?userId=${user.id}`);
+				
+				const trashDir = workingDir.id === null ? "": workingDir.id;
+				const response = await fetch(`http://localhost:3000/api/trash?userId=${user.id}&trashDir=${trashDir}`);
 				if(!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
 				const body = await response.json();
@@ -61,7 +65,13 @@ const TrashPage = () => {
 		}
 
 		fetchFiles();
-	}, [isSignedIn, isLoaded, user, refreshKey]);
+	}, [isSignedIn, isLoaded, user, refreshKey, workingDir]);
+
+	const handleRestore = async() => {
+		
+	}
+	const handleDelete = async() => {}
+	const handleClear = async() => {}
 
   return (
 		<div className='flex w-full h-screen'>
