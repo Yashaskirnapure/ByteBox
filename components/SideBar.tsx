@@ -1,18 +1,6 @@
 'use client';
 
-import {
-	UploadCloud,
-	Trash,
-	Folders,
-	Users,
-	Star,
-	Box,
-	Settings,
-	LogOut,
-	User,
-	LayoutDashboard,
-
-} from "lucide-react";
+import { Trash, Folders, Users, Star, Box, Settings, LogOut, User, LayoutDashboard } from "lucide-react";
 import { SidebarItem } from "./SidebarItem";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
@@ -32,20 +20,20 @@ export function SideBar() {
 				<Separator/>
 				<div className="px-2">
 					<p className="text-muted-foreground uppercase text-xs font-semibold mb-2">Personal</p>
-					<SidebarItem icon={User} label="Profile" />
-					<SidebarItem icon={Users} label="Shared with me" />
-					<SidebarItem icon={Settings} label="Settings" />
+					<SidebarItem icon={User} label="Profile" link="profile"/>
+					<SidebarItem icon={Users} label="Shared with me" link="share"/>
+					<SidebarItem icon={Settings} label="Settings" link="settings"/>
 				</div>
 				<Separator/>
 				<div className="px-2">
 					<p className="text-muted-foreground uppercase text-xs font-semibold mb-2">Manage</p>
-					<SidebarItem icon={Folders} label="File Manager" />
-					<SidebarItem icon={LayoutDashboard} label="Dashboard" />
+					<SidebarItem icon={Folders} label="File Manager" link="file_manager"/>
+					<SidebarItem icon={LayoutDashboard} label="Dashboard" link="dashboard"/>
 				</div>
 				<Separator/>
 				<div className="px-2">
-					<SidebarItem icon={Star} label="Starred" />
-					<SidebarItem icon={Trash} label="Trash" />
+					<SidebarItem icon={Star} label="Starred" link="star"/>
+					<SidebarItem icon={Trash} label="Trash" link="trash"/>
 				</div>
 				<Separator/>
 			</div>

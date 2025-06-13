@@ -11,17 +11,10 @@ import {
     getFilteredRowModel,
     useReactTable
 } from "@tanstack/react-table"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-} from "@/components/ui/table";
-import { FolderUp } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useTrashNavigation } from "@/context/TrashNavigationContext";
 import { FileData } from "@/types/types";
+import { FolderUp } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[],

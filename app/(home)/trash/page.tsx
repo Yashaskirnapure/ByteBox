@@ -22,7 +22,10 @@ const TrashPage = () => {
 	const [ loadingError, setLoadingError ] = useState<string | null> (null);
 	const { isLoaded, isSignedIn, user } = useUser();
 	const [ searchQuery, setSearchQuery ] = useState<string>('');
+
 	const [ restoring, setRestoring ] = useState<boolean>(false);
+	const [ clearing, setClearing ] = useState<boolean>(false);
+	const [ deleting, setDeleting ] = useState<boolean>(false);
 
 	const { refreshKey, incrementRefreshKey } = useDirectory();
 	const { workingDir, setWorkingDir } = useTrashNavigation();
@@ -80,18 +83,21 @@ const TrashPage = () => {
 			setRestoring(true);
 			
 			const fileIds = selectedFiles.map(item => item.id)
-			const response = await fetch(``,
+			const response = await fetch(`http://localhost:3000/api/trash/restore?userId=${user.id}`,
 			{
 				method: 'PATCH',
 				body: JSON.stringify({ fileIds })
 			});
 
+			if(!response.ok) throw new Error("Could not restore. Something went wrong.");
 			incrementRefreshKey();
 		}catch(err: any){
 			setIsLoadingError(true);
 			setLoadingError("Error loading files");
 			toast.error("Could not load files");
 			console.error("Error loading files", err);
+		}finally{
+			setRestoring(false);
 		}
 	}
 
@@ -117,10 +123,26 @@ const TrashPage = () => {
 				<div className="flex justify-between items-center">
 					<h2 className="text-[20px] font-semibold tracking-tight text-gray-800">Trash</h2>
 					<div className='flex justify-center items-center gap-2'>
+						{restoring && (
+							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
+								Restoring items. Please wait..
+							</div>
+						)}
+						{clearing && (
+							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
+								Clearing trash. Please wait..
+							</div>
+						)}
+						{deleting && (
+							<div className="bg-blue-100 text-blue-700 border border-blue-400 px-4 py-2 rounded-md text-xs">
+								Deleting permanantly. Please wait..
+							</div>
+						)}
 						<Button
 							className="cursor-pointer text-xs"
 							variant='outline'
 							disabled={selectedFiles.length === 0}
+							onClick={ handleRestore }
 						>
 							<Undo className="w-4 h-4 mr-2"/>
 							Restore

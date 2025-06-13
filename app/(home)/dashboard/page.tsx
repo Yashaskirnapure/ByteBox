@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react';
 import { FileData } from '@/types/types';
 import { useUser } from '@clerk/nextjs';
 import { useDirectory } from '@/context/DirectoryContext';
-import { NextResponse } from 'next/server';
 import { toast } from "sonner";
 import { useDirectoryNavigation } from '@/context/DirectoryNavigationContext';
 
