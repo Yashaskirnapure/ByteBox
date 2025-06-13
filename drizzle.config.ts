@@ -10,6 +10,10 @@ const databaseUrl = isProd
 
 if(!databaseUrl) throw new Error("Database url not loaded.");
 
+console.log("----------------------------------");
+console.log(databaseUrl);
+console.log("----------------------------------");
+
 export default defineConfig({
   out: './drizzle',
   schema: './src/db/schema.ts',

@@ -20,7 +20,6 @@ import {
     TableRow
 } from "@/components/ui/table";
 import { FolderUp } from "lucide-react";
-import { useDirectory } from "@/context/DirectoryContext";
 import { useTrashNavigation } from "@/context/TrashNavigationContext";
 import { FileData } from "@/types/types";
 

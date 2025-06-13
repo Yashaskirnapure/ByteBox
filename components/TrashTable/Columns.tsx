@@ -40,12 +40,10 @@ export const columns: ColumnDef<FileData>[] = [
                                 <Folder className="w-4 h-4" />
                                 <span>{file.name.length > 60 ? `${file.name.substring(0, 60)}.........` : file.name}</span>
                             </div> :
-                        <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
                             <div className="flex items-center gap-2">
                                     <FileText className="w-4 h-4" />
                                     <span>{file.name.length > 60 ? `${file.name.substring(0, 60)}.........` : file.name}</span>
                             </div>
-                        </a>
                     }
                 </div>
             )

@@ -21,9 +21,16 @@ const TrashPage = () => {
 	const [ isLoadingError, setIsLoadingError ] = useState<boolean>(false);
 	const [ loadingError, setLoadingError ] = useState<string | null> (null);
 	const { isLoaded, isSignedIn, user } = useUser();
+	const [ searchQuery, setSearchQuery ] = useState<string>('');
+	const [ restoring, setRestoring ] = useState<boolean>(false);
 
 	const { refreshKey, incrementRefreshKey } = useDirectory();
 	const { workingDir, setWorkingDir } = useTrashNavigation();
+
+	useEffect(() => {
+		const searchResults = files.filter((file) => { return file.name.toLowerCase().includes(searchQuery); });
+		setDisplayFiles(searchResults);
+	}, [ searchQuery ]);
 
 	useEffect(() => {
 		const fetchFiles = async () => {
@@ -68,8 +75,26 @@ const TrashPage = () => {
 	}, [isSignedIn, isLoaded, user, refreshKey, workingDir]);
 
 	const handleRestore = async() => {
-		
+		try{
+			if(!isLoaded || !isSignedIn || !user.id) return;
+			setRestoring(true);
+			
+			const fileIds = selectedFiles.map(item => item.id)
+			const response = await fetch(``,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({ fileIds })
+			});
+
+			incrementRefreshKey();
+		}catch(err: any){
+			setIsLoadingError(true);
+			setLoadingError("Error loading files");
+			toast.error("Could not load files");
+			console.error("Error loading files", err);
+		}
 	}
+
 	const handleDelete = async() => {}
 	const handleClear = async() => {}
 
@@ -82,6 +107,8 @@ const TrashPage = () => {
 					<Input
 						placeholder="Search files..."
 						className="w-1/3"
+						value={searchQuery}
+						onChange={(e) => { setSearchQuery(e.target.value) }}
 					/>
 				</div>
 			</div>
