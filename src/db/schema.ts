@@ -11,7 +11,7 @@ export const files = pgTable("files", {
     type: text("type").notNull(),
 
     //storage information
-    fileUrl: text("fileURL").notNull(),
+    fileUrl: text("fileURL"),
     thumbnailUrl: text("thumbnailURL"),
 
     //ownership

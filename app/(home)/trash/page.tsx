@@ -93,16 +93,34 @@ const TrashPage = () => {
 			incrementRefreshKey();
 		}catch(err: any){
 			setIsLoadingError(true);
-			setLoadingError("Error loading files");
+			setLoadingError("Error occured while restoring files");
 			toast.error("Could not load files");
-			console.error("Error loading files", err);
+			console.error("Error restoring", err);
 		}finally{
 			setRestoring(false);
 		}
 	}
 
 	const handleDelete = async() => {}
-	const handleClear = async() => {}
+
+	const handleClear = async() => {
+		try{
+			if(!isLoaded || !isSignedIn || !user.id) return;
+			setRestoring(true);
+			
+			const response = await fetch(`http://localhost:3000/api/trash/clear?userId=${user.id}`, { method: 'DELETE'});
+			if(!response.ok) throw new Error("Could not restore. Something went wrong.");
+			
+			incrementRefreshKey();
+		}catch(err: any){
+			setIsLoadingError(true);
+			setLoadingError("Error occurred while clearing files.");
+			toast.error("Could not load files");
+			console.error("Error clearing files", err);
+		}finally{
+			setRestoring(false);
+		}
+	}
 
   return (
 		<div className='flex w-full h-screen'>
@@ -142,7 +160,7 @@ const TrashPage = () => {
 							className="cursor-pointer text-xs"
 							variant='outline'
 							disabled={selectedFiles.length === 0}
-							onClick={ handleRestore }
+							onClick={handleRestore}
 						>
 							<Undo className="w-4 h-4 mr-2"/>
 							Restore
@@ -157,6 +175,7 @@ const TrashPage = () => {
 						</Button>
 						<Button
 							className="cursor-pointer text-xs"
+							onClick={handleClear}
 						>
 							<Brush className="w-4 h-4 mr-2"/>
 							Clear
