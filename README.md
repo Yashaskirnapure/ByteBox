@@ -32,7 +32,7 @@ ByteBox is a full-featured file storage and management system built with Next.js
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/bytebox.git
+git clone https://github.com/Yashaskirnapure/ByteBox.git
 cd bytebox
 ```
 
