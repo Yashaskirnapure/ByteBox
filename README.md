@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📦 ByteBox
 
-## Getting Started
+ByteBox is a full-featured file storage and management system built with Next.js, Supabase, and Clerk. It offers secure authentication, cloud storage, and a responsive UI for seamless file handling — all from your browser.
 
-First, run the development server:
+## ✨ Features
+
+- 🔐 **Authentication** – Secure login and user management with [Clerk](https://clerk.dev)
+- ☁️ **File Storage** – Upload, view, and manage your files in the cloud using Imagekit.io and [Supabase Storage](https://supabase.com/storage)
+- 🗂️ **Folder Organization** – Create folders and structure your files just like a real file system
+- 🗑️ **Trash Management** – Soft-delete files and permanently remove them later
+- 📄 **Previews & Metadata** – Preview files and view metadata like size, type, and upload time
+- 🔎 **Responsive UI** – Built with [shadcn/ui](https://ui.shadcn.com) for a sleek, responsive user experience
+- 🔧 **Built with**:
+  - [Next.js](https://nextjs.org)
+  - [TypeScript](https://www.typescriptlang.org)
+  - [Supabase](https://supabase.com)
+  - [Clerk](https://clerk.dev)
+  - [shadcn/ui](https://ui.shadcn.com)
+
+## 🛠️ Tech Stack
+
+| Tool        | Purpose                           |
+|-------------|-----------------------------------|
+| Next.js     | Fullstack React framework         |
+| TypeScript  | Safer JavaScript with types       |
+| Supabase    | File storage & database backend   |
+| Clerk       | User authentication and sessions  |
+| Shadcn UI   | Reusable components & design system |
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/bytebox.git
+cd bytebox
+```
+
+## 2. Install Dependencies
+
+```bash
+npm install
+```
+
+## 3. Set Up Environment Variables
+
+```bash
+NODE_ENV=
+DATABASE_URL_DEV=
+DATABASE_URL_PROD=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY=
+IMAGEKIT_PRIVATE_KEY=
+NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=
+
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
+```
+
+## 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

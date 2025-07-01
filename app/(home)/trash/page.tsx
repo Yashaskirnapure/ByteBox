@@ -101,7 +101,30 @@ const TrashPage = () => {
 		}
 	}
 
-	const handleDelete = async() => {}
+	const handleDelete = async() => {
+		try{
+			if(!isLoaded || !isSignedIn || !user.id) return;
+
+			setDeleting((true));
+			const fileIds = selectedFiles.map(file => file.id);
+			const response = await fetch(`http://localhost:3000/api/trash/delete?userId=${user.id}`, 
+				{ 
+					method: 'DELETE',
+					body: JSON.stringify({ fileIds }),
+				}
+			);
+			if(!response.ok) throw new Error("Could not Delete the given files.");
+
+			incrementRefreshKey();
+		}catch(err: any){
+			setIsLoadingError(true);
+			setLoadingError("Error occured while deleting files");
+			toast.error("Could not load files");
+			console.error("Error deleting", err);
+		}finally{
+			setRestoring(false);
+		}
+	}
 
 	const handleClear = async() => {
 		try{
@@ -110,7 +133,7 @@ const TrashPage = () => {
 			
 			const response = await fetch(`http://localhost:3000/api/trash/clear?userId=${user.id}`, { method: 'DELETE'});
 			if(!response.ok) throw new Error("Could not restore. Something went wrong.");
-			
+
 			incrementRefreshKey();
 		}catch(err: any){
 			setIsLoadingError(true);
@@ -169,6 +192,7 @@ const TrashPage = () => {
 							className="cursor-pointer text-xs"
 							variant='outline'
 							disabled={selectedFiles.length === 0}
+							onClick={handleDelete}
 						>
 							<Trash className="w-4 h-4 mr-2"/>
 							Delete
